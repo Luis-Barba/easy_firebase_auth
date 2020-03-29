@@ -1,5 +1,5 @@
-# flutter_firebase_extra
-Add Firebase authentication with a few lines of code.
+# easy_firebase_auth
+Add Firebase authentication to your Flutter app with a few lines of code.
 
 This package manages the authentication state of the app. And toggles between the different screens.
 
