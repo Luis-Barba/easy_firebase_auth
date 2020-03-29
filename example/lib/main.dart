@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:easy_firebase_auth/flutter_firebase_extra.dart';
+import 'package:easy_firebase_auth/easy_firebase_auth.dart';
 
 void main() => runApp(MyApp());
 
