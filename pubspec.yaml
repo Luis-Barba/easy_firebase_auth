@@ -3,8 +3,8 @@ description: Manage authentication with firebase in an extremely simple way
 version: 1.0.0
 author: Luis Barba <lymtechx@gmail.com>
 homepage: https://lymtechx.com/
-repository: https://github.com/lymtechx/flutter_simple_firebase_auth
-issue_tracker: https://github.com/lymtechx/flutter_simple_firebase_auth/issues
+repository: https://github.com/lymtechx/easy_firebase_auth
+issue_tracker: https://github.com/lymtechx/easy_firebase_auth/issues
 
 environment:
   sdk: ">=2.3.0 <3.0.0"
