@@ -165,6 +165,8 @@ class AuthState extends ChangeNotifier {
 
   String get photoUrl =>
       _myFirebaseAuth.myUser != null ? _myFirebaseAuth.myUser.photoUrl : null;
+
+  FirebaseUser get firebaseUser => _myFirebaseAuth?._myUser;
 }
 
 ///
