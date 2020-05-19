@@ -5,11 +5,14 @@ import '../states/auth_state.dart';
 
 class AuthManagerWidget extends StatefulWidget {
   final Widget splashScreen, introductionScreen, loginScreen, mainScreen;
+  final Function() onLogin, onLogout;
 
   AuthManagerWidget(
       {Key key,
       this.splashScreen,
       this.introductionScreen,
+      this.onLogin,
+      this.onLogout,
       @required this.loginScreen,
       @required this.mainScreen})
       : super(key: key);
@@ -22,6 +25,8 @@ class _AuthManagerWidgetState extends State<AuthManagerWidget> {
   @override
   Widget build(BuildContext context) {
     AuthState authModel = Provider.of<AuthState>(context);
+    authModel.setOnLoginListener(widget.onLogin);
+    authModel.setOnLogoutListener(widget.onLogout);
 
     switch (authModel.authStatus) {
       case AuthStatus.CHECKING:

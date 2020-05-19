@@ -20,9 +20,9 @@ enum AuthMethod {
   NULL // If already logged
 }
 
+/// [_onLogin] & [_onLogout] are called only one time after sign in or sign out
 class AuthState extends ChangeNotifier {
-  final Function(AuthMethod, FirebaseUser) onUserLogInListener;
-  final Function() onUserLogOutListener;
+  Function _onLogin, _onLogout;
   final int splashScreenDurationMillis;
 
   _MyFirebaseAuth _myFirebaseAuth;
@@ -33,10 +33,7 @@ class AuthState extends ChangeNotifier {
 
   bool _splashScreenComplete = false;
 
-  AuthState(
-      {this.onUserLogInListener,
-      this.onUserLogOutListener,
-      this.splashScreenDurationMillis = 0}) {
+  AuthState({this.splashScreenDurationMillis = 0}) {
     _setSplashScreenComplete();
 
     _myFirebaseAuth = _MyFirebaseAuth((user) {
@@ -48,6 +45,14 @@ class AuthState extends ChangeNotifier {
     });
   }
 
+  setOnLoginListener(Function() onLogin) {
+    this._onLogin = onLogin;
+  }
+
+  setOnLogoutListener(Function() onLogout) {
+    this._onLogout = onLogout;
+  }
+
   Future _onUserNotLogged() async {
     _introductionCompleted =
         await _MySharedPreferences.getIntroductionCompleted();
@@ -57,13 +62,11 @@ class AuthState extends ChangeNotifier {
       _authStatus = AuthStatus.NOT_LOGGED_FIRST_OPEN;
     }
 
-    if (onUserLogOutListener != null) onUserLogOutListener();
     notifyListeners();
   }
 
   Future _onUserLogged(AuthMethod method, FirebaseUser user) async {
     _authStatus = AuthStatus.LOGGED;
-    if (onUserLogInListener != null) onUserLogInListener(method, user);
     notifyListeners();
   }
 
@@ -90,25 +93,37 @@ class AuthState extends ChangeNotifier {
 
   Future<FirebaseUser> signInAnonymous() async {
     var user = await _myFirebaseAuth.signInAnonymous();
-    if (user != null) _onUserLogged(AuthMethod.ANONYMOUS, user);
+    if (user != null) {
+      _onUserLogged(AuthMethod.ANONYMOUS, user);
+      _onLogin?.call();
+    }
     return user;
   }
 
   Future<FirebaseUser> signInGoogle() async {
     var user = await _myFirebaseAuth.signInGoogle();
-    if (user != null) _onUserLogged(AuthMethod.GOOGLE, user);
+    if (user != null) {
+      _onUserLogged(AuthMethod.GOOGLE, user);
+      _onLogin?.call();
+    }
     return user;
   }
 
   Future<FirebaseUser> signInApple() async {
     var user = await _myFirebaseAuth.signInApple();
-    if (user != null) _onUserLogged(AuthMethod.APPLE, user);
+    if (user != null) {
+      _onUserLogged(AuthMethod.APPLE, user);
+      _onLogin?.call();
+    }
     return user;
   }
 
   Future<FirebaseUser> signInWithEmail(String email, String password) async {
     var user = await _myFirebaseAuth.signInWithEmail(email, password);
-    if (user != null) _onUserLogged(AuthMethod.EMAIL, user);
+    if (user != null) {
+      _onUserLogged(AuthMethod.EMAIL, user);
+      _onLogin?.call();
+    }
     return user;
   }
 
@@ -118,6 +133,7 @@ class AuthState extends ChangeNotifier {
     if (user != null) {
       await changeName(name);
       _onUserLogged(AuthMethod.EMAIL, user);
+      _onLogin?.call();
     }
     return user;
   }
@@ -146,6 +162,7 @@ class AuthState extends ChangeNotifier {
   Future<void> signOut() async {
     await _myFirebaseAuth.signOut();
     _onUserNotLogged();
+    _onLogout?.call();
   }
 
   AuthStatus get authStatus =>

@@ -30,6 +30,12 @@ class ParentPage extends StatelessWidget {
             "y las [condiciones de servicio](https://myTermsUrl.com).");
 
     return AuthManagerWidget(
+      onLogin: (){
+        print('onLogin()');
+      },
+      onLogout: (){
+        print('onLogout()');
+      },
       splashScreen: Scaffold(
         backgroundColor: Colors.black,
         body: Center(
