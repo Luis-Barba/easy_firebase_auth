@@ -1,3 +1,5 @@
+## [1.0.4] - 24/05/2020.
+- Add custom text to Apple sign in
 ## [1.0.3] - 19/05/2020.
 - Add onLogin() & onLogout() listeners
 ## [1.0.2] - 01/04/2020.
