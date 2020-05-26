@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:apple_sign_in/apple_sign_in.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -88,7 +89,7 @@ class AuthState extends ChangeNotifier {
   }
 
   Future<bool> supportsAppleSignIn() async {
-    return await AppleSignIn.isAvailable();
+    return !kIsWeb && await AppleSignIn.isAvailable();
   }
 
   Future<FirebaseUser> signInAnonymous() async {
