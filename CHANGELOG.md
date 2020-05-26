@@ -1,3 +1,6 @@
+## [1.0.6] - 26/05/2020.
+- Add web support
+- Remove shimmer dependency
 ## [1.0.5] - 24/05/2020.
 - Fix bug
 ## [1.0.4] - 24/05/2020.
