@@ -5,7 +5,6 @@ import 'package:easy_firebase_auth/buttons/google_sign_in_button.dart';
 import 'package:easy_firebase_auth/states/auth_state.dart';
 import 'package:easy_firebase_auth/values/auth_strings.dart';
 import 'package:provider/provider.dart';
-import 'package:shimmer/shimmer.dart';
 
 import 'email_login_screen.dart';
 
@@ -55,7 +54,7 @@ class _LoginScreenState extends State<LoginScreen> {
       child: Scaffold(
         backgroundColor: widget.backgroundColor,
         body: Stack(
-          alignment: Alignment.topCenter,
+          alignment: Alignment.center,
           children: <Widget>[
             if (widget.backgroundWidget != null)
               Container(
@@ -164,17 +163,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
               ],
             ),
-            loading
-                ? Shimmer.fromColors(
-                    child: Container(
-                      height: 6,
-                      color: Colors.white,
-                    ),
-                    baseColor: Theme.of(context).primaryColor,
-                    highlightColor: Colors.white,
-                    period: Duration(milliseconds: 750),
-                  )
-                : Container()
+            loading ? CircularProgressIndicator() : Container()
           ],
         ),
         resizeToAvoidBottomInset: false,

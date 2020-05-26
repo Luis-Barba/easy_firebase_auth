@@ -3,7 +3,6 @@ import 'package:flutter/services.dart';
 import 'package:easy_firebase_auth/values/auth_strings.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:provider/provider.dart';
-import 'package:shimmer/shimmer.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../states/auth_state.dart';
@@ -449,20 +448,11 @@ class _EmailLoginScreenState extends State<EmailLoginScreen> {
               title: Text(strings.loginAppBarTitle),
             ),
         body: Stack(
+          alignment: Alignment.center,
           children: <Widget>[
             _mainWidget,
             _loading
-                ? Shimmer.fromColors(
-                    child: Container(
-                      height: 6,
-                      color: Colors.white,
-                    ),
-                    baseColor:
-                        widget.shimmerColor1 ?? Theme.of(context).primaryColor,
-                    highlightColor: widget.shimmerColor2 ?? Colors.white,
-                    period: Duration(milliseconds: 750),
-                  )
-                : Container(),
+                ? CircularProgressIndicator() : Container(),
           ],
         ));
   }
