@@ -23,7 +23,8 @@ enum AuthMethod {
 
 /// [_onLogin] & [_onLogout] are called only one time after sign in or sign out
 class AuthState extends ChangeNotifier {
-  Function _onLogin, _onLogout;
+  Function(AuthMethod) _onLogin;
+  Function() _onLogout;
   final int splashScreenDurationMillis;
 
   _MyFirebaseAuth _myFirebaseAuth;
@@ -46,7 +47,7 @@ class AuthState extends ChangeNotifier {
     });
   }
 
-  setOnLoginListener(Function() onLogin) {
+  setOnLoginListener(Function(AuthMethod) onLogin) {
     this._onLogin = onLogin;
   }
 
@@ -96,7 +97,7 @@ class AuthState extends ChangeNotifier {
     var user = await _myFirebaseAuth.signInAnonymous();
     if (user != null) {
       _onUserLogged(AuthMethod.ANONYMOUS, user);
-      _onLogin?.call();
+      _onLogin?.call(AuthMethod.ANONYMOUS);
     }
     return user;
   }
@@ -105,7 +106,7 @@ class AuthState extends ChangeNotifier {
     var user = await _myFirebaseAuth.signInGoogle();
     if (user != null) {
       _onUserLogged(AuthMethod.GOOGLE, user);
-      _onLogin?.call();
+      _onLogin?.call(AuthMethod.GOOGLE);
     }
     return user;
   }
@@ -114,7 +115,7 @@ class AuthState extends ChangeNotifier {
     var user = await _myFirebaseAuth.signInApple();
     if (user != null) {
       _onUserLogged(AuthMethod.APPLE, user);
-      _onLogin?.call();
+      _onLogin?.call(AuthMethod.APPLE);
     }
     return user;
   }
@@ -123,7 +124,7 @@ class AuthState extends ChangeNotifier {
     var user = await _myFirebaseAuth.signInWithEmail(email, password);
     if (user != null) {
       _onUserLogged(AuthMethod.EMAIL, user);
-      _onLogin?.call();
+      _onLogin?.call(AuthMethod.EMAIL);
     }
     return user;
   }
@@ -134,7 +135,7 @@ class AuthState extends ChangeNotifier {
     if (user != null) {
       await changeName(name);
       _onUserLogged(AuthMethod.EMAIL, user);
-      _onLogin?.call();
+      _onLogin?.call(AuthMethod.EMAIL);
     }
     return user;
   }

@@ -30,8 +30,8 @@ class ParentPage extends StatelessWidget {
             "y las [condiciones de servicio](https://myTermsUrl.com).");
 
     return AuthManagerWidget(
-      onLogin: (){
-        print('onLogin()');
+      onLogin: (method){
+        print('onLogin() ${method.toString()}');
       },
       onLogout: (){
         print('onLogout()');

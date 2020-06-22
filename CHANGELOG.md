@@ -1,3 +1,5 @@
+## [1.0.7] - 22/06/2020.
+- Add AuthMethod to callback
 ## [1.0.6] - 26/05/2020.
 - Add web support
 - Remove shimmer dependency

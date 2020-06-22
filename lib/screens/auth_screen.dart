@@ -5,7 +5,8 @@ import '../states/auth_state.dart';
 
 class AuthManagerWidget extends StatefulWidget {
   final Widget splashScreen, introductionScreen, loginScreen, mainScreen;
-  final Function() onLogin, onLogout;
+  final Function(AuthMethod) onLogin;
+  final Function() onLogout;
 
   AuthManagerWidget(
       {Key key,
