@@ -142,10 +142,10 @@ class AuthStrings {
 
   factory AuthStrings.portuguese(
       {
-        signInWithEmail = "Iniciar sessão com o email",
-        signInWithGoogle = "Iniciar sessão com Google",
-        signInWithFacebook = "Iniciar sessão com Facebook",
-        signInWithTwitter = "Iniciar sessão com Twitter",
+        signInWithEmail = "Continuar com email",
+        signInWithGoogle = "Continuar com Google",
+        signInWithFacebook = "Continuar com Facebook",
+        signInWithTwitter = "Continuar com Twitter",
         signInAnonymous = "Continuar sem registar",
         understood = "Ok",
         changePassword = "Alterar palavra-passe",

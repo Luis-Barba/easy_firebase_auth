@@ -139,7 +139,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           setState(() {});
                         }
                       },
-                      text: strings.signInWithTwitter,
+                      text: strings.signInWithFacebook,
                     ),
                   ),
 

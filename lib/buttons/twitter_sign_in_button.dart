@@ -29,10 +29,6 @@ class TwitterSignInButton extends StatelessWidget {
           child: Container(
             height: 38.0, // 40dp - 2*1dp border
             width: 38.0, // matches above
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(this.borderRadius),
-            ),
             child: Center(
               child: Image(
                 image: AssetImage(

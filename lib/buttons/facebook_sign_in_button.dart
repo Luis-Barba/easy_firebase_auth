@@ -9,7 +9,7 @@ class FacebookSignInButton extends StatelessWidget {
 
   FacebookSignInButton(
       {this.onPressed,
-      this.text = 'Sign in with Twitter',
+      this.text = 'Sign in with Facebook',
       // Google doesn't specify a border radius, but this looks about right.
       this.borderRadius = defaultBorderRadius,
       Key key})
@@ -29,10 +29,6 @@ class FacebookSignInButton extends StatelessWidget {
           child: Container(
             height: 38.0, // 40dp - 2*1dp border
             width: 38.0, // matches above
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(this.borderRadius),
-            ),
             child: Center(
               child: Image(
                 image: AssetImage(
