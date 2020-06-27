@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 class AuthStrings {
   // Sign In Buttons
-  String signInWithEmail, signInWithGoogle, signInAnonymous;
+  String signInWithEmail, signInWithGoogle, signInWithTwitter, signInWithFacebook, signInAnonymous;
 
   // Other Buttons
   String understood, changePassword, cancel, accept, next, forgotPassword;
@@ -32,6 +32,8 @@ class AuthStrings {
   AuthStrings({
     @required this.signInWithEmail,
     @required this.signInWithGoogle,
+    @required this.signInWithFacebook,
+    @required this.signInWithTwitter,
     @required this.signInAnonymous,
     @required this.understood,
     @required this.changePassword,
@@ -65,6 +67,8 @@ class AuthStrings {
   factory AuthStrings.spanish(
       {signInWithEmail = "Acceder con email",
       signInWithGoogle = "Acceder con Google",
+      signInWithFacebook = "Acceder con Facebook",
+      signInWithTwitter = "Acceder con Twitter",
       signInAnonymous = "Continuar sin registrarme",
       understood = "Ok",
       changePassword = "Cambiar contraseña",
@@ -100,6 +104,8 @@ class AuthStrings {
     return AuthStrings(
       signInWithEmail: signInWithEmail,
       signInWithGoogle: signInWithGoogle,
+      signInWithFacebook: signInWithFacebook,
+      signInWithTwitter: signInWithTwitter,
       signInAnonymous: signInAnonymous,
       understood: understood,
       changePassword: changePassword,
@@ -133,9 +139,88 @@ class AuthStrings {
     );
   }
 
+
+  factory AuthStrings.portuguese(
+      {
+        signInWithEmail = "Iniciar sessão com o email",
+        signInWithGoogle = "Iniciar sessão com Google",
+        signInWithFacebook = "Iniciar sessão com Facebook",
+        signInWithTwitter = "Iniciar sessão com Twitter",
+        signInAnonymous = "Continuar sem registar",
+        understood = "Ok",
+        changePassword = "Alterar palavra-passe",
+        cancel = "Cancelar",
+        accept = "Aceitar",
+        next = "SEGUINTE",
+        forgotPassword = "Esqueceu-se da palavra-passe?",
+        weWillSendYouAnEmailToChangePassword =
+        "Enviaremos um email a \$ com instruções sobre como alterar a palavra-passe",
+        emailSentToChangePassword = 'Enviámos um email a \$',
+        emailRegisteredEnterPasswordNoticeMarkdown =
+        "Já utilizou anteriormente o email __\$__ para iniciar a sessão. Introduza a palavra-passe para esta conta",
+        privacyMarkdown =
+        "Aceito a política de privacidade e os termos de utilização",
+        errorWeakPassword = 'A palavra-passe não é segura',
+        errorInvalidEmail = 'Email inválido',
+        errorEmailAlreadyInUse = 'Esse email já está em utilização',
+        errorWrongPassword = 'Palavra-passe incorreta',
+        errorUserNotFound = 'Utilizador não encontrado',
+        errorUserDisabled = 'Utilizador desativado',
+        errorTooManyRequests =
+        'Fez demasiadas tentativas, tente mais tarde.',
+        errorOperationNotAllowed = 'Operação não permitida',
+        emailNotValid = 'Email inválido',
+        emailCantBeEmpty = 'O email não pode estar vazio',
+        nameCantBeEmpty = 'O nombre não pode estar vazio',
+        passwordTooShort = "A palavra-passe é demasiado curta",
+        email = "EMail",
+        passwordHint = 'Palavra-passe',
+        passwordEmpty = 'Introduza uma palavra-passe',
+        nameHint = 'Nome',
+        loginAppBarTitle = "Iniciar Sessão"}) {
+    return AuthStrings(
+      signInWithEmail: signInWithEmail,
+      signInWithGoogle: signInWithGoogle,
+      signInWithFacebook: signInWithFacebook,
+      signInWithTwitter: signInWithTwitter,
+      signInAnonymous: signInAnonymous,
+      understood: understood,
+      changePassword: changePassword,
+      cancel: cancel,
+      accept: accept,
+      next: next,
+      forgotPassword: forgotPassword,
+      weWillSendYouAnEmailToChangePassword:
+      weWillSendYouAnEmailToChangePassword,
+      emailSentToChangePassword: emailSentToChangePassword,
+      emailRegisteredEnterPasswordNoticeMarkdown:
+      emailRegisteredEnterPasswordNoticeMarkdown,
+      privacyMarkdown: privacyMarkdown,
+      errorWeakPassword: errorWeakPassword,
+      errorInvalidEmail: errorInvalidEmail,
+      errorEmailAlreadyInUse: errorEmailAlreadyInUse,
+      errorWrongPassword: errorWrongPassword,
+      errorUserNotFound: errorUserNotFound,
+      errorUserDisabled: errorUserDisabled,
+      errorTooManyRequests: errorTooManyRequests,
+      errorOperationNotAllowed: errorOperationNotAllowed,
+      emailNotValid: emailNotValid,
+      emailCantBeEmpty: emailCantBeEmpty,
+      nameCantBeEmpty: nameCantBeEmpty,
+      passwordTooShort: passwordTooShort,
+      email: email,
+      passwordHint: passwordHint,
+      passwordEmpty: passwordEmpty,
+      nameHint: nameHint,
+      loginAppBarTitle: loginAppBarTitle,
+    );
+  }
+
   factory AuthStrings.english(
       {signInWithEmail = "Sign in with email",
       signInWithGoogle = "Sign in with Google",
+      signInWithFacebook = "Sign in with Facebook",
+      signInWithTwitter = "Sign in with Twitter",
       signInAnonymous = "Continue without registering",
       understood = "Ok",
       changePassword = "Change password",
@@ -170,6 +255,8 @@ class AuthStrings {
     return AuthStrings(
       signInWithEmail: signInWithEmail,
       signInWithGoogle: signInWithGoogle,
+      signInWithFacebook: signInWithFacebook,
+      signInWithTwitter: signInWithTwitter,
       signInAnonymous: signInAnonymous,
       understood: understood,
       changePassword: changePassword,

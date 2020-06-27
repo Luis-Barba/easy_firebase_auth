@@ -17,6 +17,8 @@ enum AuthMethod {
   EMAIL,
   GOOGLE,
   APPLE,
+  FACEBOOK,
+  TWITTER,
   ANONYMOUS,
   NULL // If already logged
 }
