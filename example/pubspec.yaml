@@ -17,5 +17,7 @@ dev_dependencies:
   easy_firebase_auth:
     path: ../
 
+
+
 flutter:
   uses-material-design: true

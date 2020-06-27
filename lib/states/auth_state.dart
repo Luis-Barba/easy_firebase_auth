@@ -4,6 +4,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:flutter_twitter/flutter_twitter.dart';
+import 'package:flutter_facebook_login/flutter_facebook_login.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 enum AuthStatus {
@@ -109,6 +111,26 @@ class AuthState extends ChangeNotifier {
     if (user != null) {
       _onUserLogged(AuthMethod.GOOGLE, user);
       _onLogin?.call(AuthMethod.GOOGLE);
+    }
+    return user;
+  }
+
+
+  Future<FirebaseUser> signInTwitter() async {
+    var user = await _myFirebaseAuth.signInTwitter();
+    if (user != null) {
+      _onUserLogged(AuthMethod.TWITTER, user);
+      _onLogin?.call(AuthMethod.TWITTER);
+    }
+    return user;
+  }
+
+
+  Future<FirebaseUser> signInFacebook() async {
+    var user = await _myFirebaseAuth.signInFacebook();
+    if (user != null) {
+      _onUserLogged(AuthMethod.FACEBOOK, user);
+      _onLogin?.call(AuthMethod.FACEBOOK);
     }
     return user;
   }
@@ -273,6 +295,44 @@ class _MyFirebaseAuth {
 
     return null;
   }
+
+
+
+  Future<FirebaseUser> signInTwitter() async {
+/*
+    var twitterLogin = new TwitterLogin(
+      consumerKey: widget.twitterConsumerKey,
+      consumerSecret: widget.twitterConsumerSecret,
+    );
+
+
+
+    final TwitterLoginResult result = await twitterLogin.authorize();
+
+    switch (result.status) {
+      case TwitterLoginStatus.loggedIn:
+        AuthCredential credential = TwitterAuthProvider.getCredential(
+            authToken: result.session.token,
+            authTokenSecret: result.session.secret);
+        await _auth.signInWithCredential(credential);
+        break;
+      case TwitterLoginStatus.cancelledByUser:
+        showErrorDialog(context, 'Login cancelled.');
+        break;
+      case TwitterLoginStatus.error:
+        showErrorDialog(context, result.errorMessage);
+        break;
+    }
+*/
+    return null;
+  }
+
+
+
+  Future<FirebaseUser> signInFacebook() async {
+    return null;
+  }
+
 
   Future<FirebaseUser> signInApple() async {
     try {

@@ -1,4 +1,6 @@
 import 'package:apple_sign_in/apple_sign_in_button.dart';
+import 'package:easy_firebase_auth/buttons/facebook_sign_in_button.dart';
+import 'package:easy_firebase_auth/buttons/twitter_sign_in_button.dart';
 import 'package:flutter/material.dart';
 import 'package:easy_firebase_auth/buttons/email_sign_in_button.dart';
 import 'package:easy_firebase_auth/buttons/google_sign_in_button.dart';
@@ -9,7 +11,7 @@ import 'package:provider/provider.dart';
 import 'email_login_screen.dart';
 
 class LoginScreen extends StatefulWidget {
-  final bool logInWithEmail, logInWithGoogle, logInWithApple, logInAnonymous;
+  final bool logInWithEmail, logInWithGoogle, logInWithTwitter, logInWithFacebook, logInWithApple, logInAnonymous;
   final bool darkMode;
   final Color backgroundColor;
   final Widget backgroundWidget, expandedWidget;
@@ -22,6 +24,8 @@ class LoginScreen extends StatefulWidget {
       this.emailLoginBuilder,
       this.logInWithEmail = true,
       this.logInWithGoogle = true,
+      this.logInWithTwitter = false,
+      this.logInWithFacebook = false,
       this.logInWithApple = true,
       this.logInAnonymous = true,
       this.darkMode = false,
@@ -90,6 +94,9 @@ class _LoginScreenState extends State<LoginScreen> {
                       },
                     ),
                   ),
+
+
+
                 if (widget.logInWithGoogle)
                   Container(
                     width: 300,
@@ -109,8 +116,56 @@ class _LoginScreenState extends State<LoginScreen> {
                       },
                       darkMode: widget.darkMode,
                       text: strings.signInWithGoogle,
+
                     ),
                   ),
+
+
+
+                if (widget.logInWithFacebook)
+                  Container(
+                    width: 300,
+                    height: 40,
+                    margin: EdgeInsets.only(
+                        left: 16, right: 16, top: 8, bottom: 16),
+                    child: FacebookSignInButton(
+                      onPressed: () async {
+                        setState(() {
+                          loading = true;
+                        });
+                        var user = await authState.signInFacebook();
+                        loading = false;
+                        if (user == null) {
+                          setState(() {});
+                        }
+                      },
+                      text: strings.signInWithTwitter,
+                    ),
+                  ),
+
+
+                if (widget.logInWithTwitter)
+                  Container(
+                    width: 300,
+                    height: 40,
+                    margin: EdgeInsets.only(
+                        left: 16, right: 16, top: 8, bottom: 16),
+                    child: TwitterSignInButton(
+                      onPressed: () async {
+                        setState(() {
+                          loading = true;
+                        });
+                        var user = await authState.signInTwitter();
+                        loading = false;
+                        if (user == null) {
+                          setState(() {});
+                        }
+                      },
+                      text: strings.signInWithTwitter,
+                    ),
+                  ),
+
+
                 if (widget.logInWithApple && supportsAppleSignIn)
                   Container(
                     width: 300,

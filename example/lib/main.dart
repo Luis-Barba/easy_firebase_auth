@@ -49,6 +49,8 @@ class ParentPage extends StatelessWidget {
       loginScreen: LoginScreen(
         authStrings: authStrings,
         backgroundColor: Colors.purple,
+        logInWithTwitter: true,
+        logInWithFacebook: true,
         expandedWidget: Center(
           child: Container(
             height: 200,

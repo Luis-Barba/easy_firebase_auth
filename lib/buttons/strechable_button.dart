@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-const double defaultBorderRadius = 3.0;
+const double defaultBorderRadius = 30.0;
 
 class StretchableButton extends StatelessWidget {
   final VoidCallback onPressed;

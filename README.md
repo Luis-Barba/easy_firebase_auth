@@ -24,6 +24,8 @@ This package uses [provider package](https://pub.dev/packages/provider)
 - Sign in with Google
 - Sign in with Apple
 - Sign in Anonymous
+- Sign in with Facebook
+- Sign in with Twitter
 
 ## Basic usage
 
@@ -98,6 +100,8 @@ LoginScreen(
         logInAnonymous: false,
         logInWithEmail: true,
         logInWithGoogle: true,
+        logInWithFacebook: true,
+        logInWithTwitter: true,
         logInWithApple: true,
         authStrings: authStrings,
         backgroundWidget: Image.network(imageUrl,
@@ -164,6 +168,36 @@ var name = authState.name;
 var email = authState.email;
 var photoUrl = authState.photoUrl;
 var isAnonymous = authState.isAnonymous;
+```
+
+** Facebook **
+Extra setup, for Android:
+AndroidManifest.xml:
+```
+        <meta-data android:name="com.facebook.sdk.ApplicationId"
+            android:value="@string/facebook_app_id"/>
+
+        <activity android:name="com.facebook.FacebookActivity"
+            android:configChanges=
+                "keyboard|keyboardHidden|screenLayout|screenSize|orientation"
+            android:label="@string/app_name" />
+```
+example strings.xml:
+```
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Your app name</string>
+
+    <!-- Replace "000000000000" with your Facebook App ID here. -->
+    <string name="facebook_app_id">000000000000</string>
+
+    <!--
+      Replace "000000000000" with your Facebook App ID here.
+      **NOTE**: The scheme needs to start with `fb` and then your ID.
+    -->
+    <string name="fb_login_protocol_scheme">fb000000000000</string>
+
+</resources>
 ```
 
 
