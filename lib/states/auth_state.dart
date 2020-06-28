@@ -4,6 +4,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:flutter_twitter/flutter_twitter.dart';
+import 'package:flutter_facebook_login/flutter_facebook_login.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 enum AuthStatus {
@@ -17,6 +19,8 @@ enum AuthMethod {
   EMAIL,
   GOOGLE,
   APPLE,
+  FACEBOOK,
+  TWITTER,
   ANONYMOUS,
   NULL // If already logged
 }
@@ -77,6 +81,7 @@ class AuthState extends ChangeNotifier {
       Future.delayed(Duration(milliseconds: splashScreenDurationMillis))
           .then((_) {
         _splashScreenComplete = true;
+
         notifyListeners();
       });
     } else {
@@ -87,6 +92,10 @@ class AuthState extends ChangeNotifier {
   setIntroductionCompleted(bool b) {
     _MySharedPreferences.setIntroductionCompleted(b);
     _introductionCompleted = b;
+    if ((b) && (_authStatus == AuthStatus.NOT_LOGGED_FIRST_OPEN)) {
+      _authStatus = AuthStatus.NOT_LOGGED_INTRO_COMPLETE;
+      notifyListeners();
+    }
   }
 
   Future<bool> supportsAppleSignIn() async {
@@ -107,6 +116,26 @@ class AuthState extends ChangeNotifier {
     if (user != null) {
       _onUserLogged(AuthMethod.GOOGLE, user);
       _onLogin?.call(AuthMethod.GOOGLE);
+    }
+    return user;
+  }
+
+
+  Future<FirebaseUser> signInTwitter(String twitterConsumerKey, String twitterConsumerSecret) async {
+    var user = await _myFirebaseAuth.signInTwitter(twitterConsumerKey, twitterConsumerSecret);
+    if (user != null) {
+      _onUserLogged(AuthMethod.TWITTER, user);
+      _onLogin?.call(AuthMethod.TWITTER);
+    }
+    return user;
+  }
+
+
+  Future<FirebaseUser> signInFacebook(List<String> permissions) async {
+    var user = await _myFirebaseAuth.signInFacebook(permissions);
+    if (user != null) {
+      _onUserLogged(AuthMethod.FACEBOOK, user);
+      _onLogin?.call(AuthMethod.FACEBOOK);
     }
     return user;
   }
@@ -271,6 +300,66 @@ class _MyFirebaseAuth {
 
     return null;
   }
+
+
+
+  Future<FirebaseUser> signInTwitter(String twitterConsumerKey, String twitterConsumerSecret) async {
+    var twitterLogin = new TwitterLogin(
+      consumerKey: twitterConsumerKey,
+      consumerSecret: twitterConsumerSecret,
+    );
+
+    final TwitterLoginResult result = await twitterLogin.authorize();
+    switch (result.status) {
+      case TwitterLoginStatus.loggedIn:
+        AuthCredential credential = TwitterAuthProvider.getCredential(
+            authToken: result.session.token,
+            authTokenSecret: result.session.secret);
+        await _firebaseAuth.signInWithCredential(credential); //AuthResult
+
+        FirebaseUser user = await _firebaseAuth.currentUser();
+
+        _myUser = user;
+        return _myUser;
+
+        break;
+      case TwitterLoginStatus.cancelledByUser:
+        print("Login cancelled");
+        break;
+      case TwitterLoginStatus.error:
+        print("Twitter login error: "+result.errorMessage);
+        break;
+    }
+
+    return null;
+  }
+
+
+
+  Future<FirebaseUser> signInFacebook(List<String> permissions) async {
+    var facebookLogin = new FacebookLogin();
+    FacebookLoginResult result = await facebookLogin.logIn(permissions);
+
+
+    if (result.accessToken != null) {
+      try {
+        AuthCredential credential = FacebookAuthProvider.getCredential(
+            accessToken: result.accessToken.token);
+        AuthResult authResult = await _firebaseAuth.signInWithCredential(credential);
+        FirebaseUser user = authResult.user;
+        _myUser = user;
+        return _myUser;
+
+
+      } catch (e) {
+        print("facebook login error: "+e.toString());
+        //showErrorDialog(context, e.details);
+      }
+    }
+
+    return null;
+  }
+
 
   Future<FirebaseUser> signInApple() async {
     try {
