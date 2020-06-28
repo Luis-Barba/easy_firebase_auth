@@ -81,6 +81,7 @@ class AuthState extends ChangeNotifier {
       Future.delayed(Duration(milliseconds: splashScreenDurationMillis))
           .then((_) {
         _splashScreenComplete = true;
+
         notifyListeners();
       });
     } else {
@@ -91,6 +92,10 @@ class AuthState extends ChangeNotifier {
   setIntroductionCompleted(bool b) {
     _MySharedPreferences.setIntroductionCompleted(b);
     _introductionCompleted = b;
+    if ((b) && (_authStatus == AuthStatus.NOT_LOGGED_FIRST_OPEN)) {
+      _authStatus = AuthStatus.NOT_LOGGED_INTRO_COMPLETE;
+      notifyListeners();
+    }
   }
 
   Future<bool> supportsAppleSignIn() async {
