@@ -16,12 +16,19 @@ class LoginScreen extends StatefulWidget {
   final Color backgroundColor;
   final Widget backgroundWidget, expandedWidget;
   final AuthStrings authStrings;
+  final double buttonBorderRadius;
+
+  final List<String> facebookPermissions;
 
   final WidgetBuilder emailLoginBuilder;
+
+  final String twitterConsumerKey;
+  final String twitterConsumerSecret;
 
   const LoginScreen(
       {Key key,
       this.emailLoginBuilder,
+      this.buttonBorderRadius = 3.0,
       this.logInWithEmail = true,
       this.logInWithGoogle = true,
       this.logInWithTwitter = false,
@@ -29,6 +36,12 @@ class LoginScreen extends StatefulWidget {
       this.logInWithApple = true,
       this.logInAnonymous = true,
       this.darkMode = false,
+
+      this.twitterConsumerKey="",
+      this.twitterConsumerSecret="",
+
+      this.facebookPermissions=const ["email"],
+
       this.backgroundColor,
       this.backgroundWidget,
       this.expandedWidget,
@@ -80,6 +93,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     margin: EdgeInsets.only(
                         left: 16, right: 16, top: 8, bottom: 16),
                     child: EmailSignInButton(
+                      borderRadius: widget.buttonBorderRadius,
                       buttonColor: Colors.green,
                       text: strings.signInWithEmail,
                       onPressed: () {
@@ -104,6 +118,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     margin: EdgeInsets.only(
                         left: 16, right: 16, top: 8, bottom: 16),
                     child: GoogleSignInButton(
+                      borderRadius: widget.buttonBorderRadius,
                       onPressed: () async {
                         setState(() {
                           loading = true;
@@ -129,11 +144,12 @@ class _LoginScreenState extends State<LoginScreen> {
                     margin: EdgeInsets.only(
                         left: 16, right: 16, top: 8, bottom: 16),
                     child: FacebookSignInButton(
+                      borderRadius: widget.buttonBorderRadius,
                       onPressed: () async {
                         setState(() {
                           loading = true;
                         });
-                        var user = await authState.signInFacebook();
+                        var user = await authState.signInFacebook(widget.facebookPermissions);
                         loading = false;
                         if (user == null) {
                           setState(() {});
@@ -151,11 +167,12 @@ class _LoginScreenState extends State<LoginScreen> {
                     margin: EdgeInsets.only(
                         left: 16, right: 16, top: 8, bottom: 16),
                     child: TwitterSignInButton(
+                      borderRadius: widget.buttonBorderRadius,
                       onPressed: () async {
                         setState(() {
                           loading = true;
                         });
-                        var user = await authState.signInTwitter();
+                        var user = await authState.signInTwitter(widget.twitterConsumerKey, widget.twitterConsumerSecret);
                         loading = false;
                         if (user == null) {
                           setState(() {});
@@ -173,6 +190,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     margin: EdgeInsets.only(
                         left: 16, right: 16, top: 8, bottom: 16),
                     child: AppleSignInButton(
+
                       style: widget.darkMode
                           ? ButtonStyle.black
                           : ButtonStyle.white,

@@ -48,9 +48,17 @@ class ParentPage extends StatelessWidget {
       //introductionScreen: MyIntroductionScreen(),
       loginScreen: LoginScreen(
         authStrings: authStrings,
-        backgroundColor: Colors.purple,
+        backgroundColor: Colors.deepPurple,
         logInWithTwitter: true,
+
+        twitterConsumerKey: "insert_twitter_consumer_key",
+        twitterConsumerSecret: "insert_twitter_consumer_secret",
+
         logInWithFacebook: true,
+        // also request user's profile - default is only ["email"]
+        facebookPermissions: ["email","profile"],
+
+
         expandedWidget: Center(
           child: Container(
             height: 200,

@@ -116,8 +116,8 @@ class AuthState extends ChangeNotifier {
   }
 
 
-  Future<FirebaseUser> signInTwitter() async {
-    var user = await _myFirebaseAuth.signInTwitter();
+  Future<FirebaseUser> signInTwitter(String twitterConsumerKey, String twitterConsumerSecret) async {
+    var user = await _myFirebaseAuth.signInTwitter(twitterConsumerKey, twitterConsumerSecret);
     if (user != null) {
       _onUserLogged(AuthMethod.TWITTER, user);
       _onLogin?.call(AuthMethod.TWITTER);
@@ -126,8 +126,8 @@ class AuthState extends ChangeNotifier {
   }
 
 
-  Future<FirebaseUser> signInFacebook() async {
-    var user = await _myFirebaseAuth.signInFacebook();
+  Future<FirebaseUser> signInFacebook(List<String> permissions) async {
+    var user = await _myFirebaseAuth.signInFacebook(permissions);
     if (user != null) {
       _onUserLogged(AuthMethod.FACEBOOK, user);
       _onLogin?.call(AuthMethod.FACEBOOK);
@@ -298,38 +298,60 @@ class _MyFirebaseAuth {
 
 
 
-  Future<FirebaseUser> signInTwitter() async {
-/*
+  Future<FirebaseUser> signInTwitter(String twitterConsumerKey, String twitterConsumerSecret) async {
     var twitterLogin = new TwitterLogin(
-      consumerKey: widget.twitterConsumerKey,
-      consumerSecret: widget.twitterConsumerSecret,
+      consumerKey: twitterConsumerKey,
+      consumerSecret: twitterConsumerSecret,
     );
 
-
-
     final TwitterLoginResult result = await twitterLogin.authorize();
-
     switch (result.status) {
       case TwitterLoginStatus.loggedIn:
         AuthCredential credential = TwitterAuthProvider.getCredential(
             authToken: result.session.token,
             authTokenSecret: result.session.secret);
-        await _auth.signInWithCredential(credential);
+        await _firebaseAuth.signInWithCredential(credential); //AuthResult
+
+        FirebaseUser user = await _firebaseAuth.currentUser();
+
+        _myUser = user;
+        return _myUser;
+
         break;
       case TwitterLoginStatus.cancelledByUser:
-        showErrorDialog(context, 'Login cancelled.');
+        print("Login cancelled");
         break;
       case TwitterLoginStatus.error:
-        showErrorDialog(context, result.errorMessage);
+        print("Twitter login error: "+result.errorMessage);
         break;
     }
-*/
+
     return null;
   }
 
 
 
-  Future<FirebaseUser> signInFacebook() async {
+  Future<FirebaseUser> signInFacebook(List<String> permissions) async {
+    var facebookLogin = new FacebookLogin();
+    FacebookLoginResult result = await facebookLogin.logIn(permissions);
+
+
+    if (result.accessToken != null) {
+      try {
+        AuthCredential credential = FacebookAuthProvider.getCredential(
+            accessToken: result.accessToken.token);
+        AuthResult authResult = await _firebaseAuth.signInWithCredential(credential);
+        FirebaseUser user = authResult.user;
+        _myUser = user;
+        return _myUser;
+
+
+      } catch (e) {
+        print("facebook login error: "+e.toString());
+        //showErrorDialog(context, e.details);
+      }
+    }
+
     return null;
   }
 
