@@ -1,3 +1,5 @@
+## [1.1.0] - 04/07/2020.
+- Work around to enable Firebase Auth persistence on web
 ## [1.0.8] - 24/06/2020.
 - Update regex to validate email
 ## [1.0.7] - 22/06/2020.
