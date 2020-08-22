@@ -1,3 +1,5 @@
+## [2.0.0] - 22/08/2020.
+- Fix AppleSignInButton to be compatible with Flutter beta
 ## [1.1.0] - 04/07/2020.
 - Work around to enable Firebase Auth persistence on web
 ## [1.0.8] - 24/06/2020.
