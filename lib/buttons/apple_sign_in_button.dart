@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 enum ButtonType { defaultButton, continueButton, signIn }
 
 /// A style for the authorization button.
-enum ButtonStyle { black, whiteOutline, white }
+enum AppleSignInButtonStyle { black, whiteOutline, white }
 
 /// A button for Sign in With Apple
 class AppleSignInButton extends StatefulWidget {
@@ -17,7 +17,7 @@ class AppleSignInButton extends StatefulWidget {
   final ButtonType type;
 
   /// A style for the authorization button.
-  final ButtonStyle style;
+  final AppleSignInButtonStyle style;
 
   /// A custom corner radius to be used by this button.
   final double cornerRadius;
@@ -28,7 +28,7 @@ class AppleSignInButton extends StatefulWidget {
   const AppleSignInButton({
     this.onPressed,
     this.type = ButtonType.defaultButton,
-    this.style = ButtonStyle.white,
+    this.style = AppleSignInButtonStyle.white,
     this.cornerRadius = 6,
     this.text
   })  : assert(type != null),
@@ -45,11 +45,11 @@ class _AppleSignInButtonState extends State<AppleSignInButton> {
   @override
   Widget build(BuildContext context) {
     final bgColor =
-    widget.style == ButtonStyle.black ? Colors.black : Colors.white;
+    widget.style == AppleSignInButtonStyle.black ? Colors.black : Colors.white;
     final textColor =
-    widget.style == ButtonStyle.black ? Colors.white : Colors.black;
+    widget.style == AppleSignInButtonStyle.black ? Colors.white : Colors.black;
     final borderColor =
-    widget.style == ButtonStyle.white ? Colors.white : Colors.black;
+    widget.style == AppleSignInButtonStyle.white ? Colors.white : Colors.black;
 
     return GestureDetector(
       onTapDown: (_) => setState(() => _isTapDown = true),
