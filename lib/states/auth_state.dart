@@ -231,7 +231,7 @@ class _MyFirebaseAuth {
   GoogleSignIn _googleSignIn = GoogleSignIn();
 
   _MyFirebaseAuth(Function(FirebaseUser) onUser) {
-    _firebaseAuth.currentUser().then((user) {
+    _firebaseAuth.onAuthStateChanged.first.then((user) {
       _myUser = user;
       onUser(user);
     });
