@@ -1,3 +1,6 @@
+## [2.1.0] - 30/08/2020
+- Add new methods
+- Refactor files
 ## [2.0.0] - 22/08/2020.
 - Fix AppleSignInButton to be compatible with Flutter beta
 ## [1.1.0] - 04/07/2020.
