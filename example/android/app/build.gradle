@@ -32,7 +32,7 @@ android {
     }
 
     defaultConfig {
-        applicationId "com.lymtechx.example_flutter_firebase_extra"
+        applicationId "com.lymtechx.example_easy_firebase_auth"
         minSdkVersion 21
         targetSdkVersion 29
         multiDexEnabled true
