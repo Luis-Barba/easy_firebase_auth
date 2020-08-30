@@ -6,20 +6,16 @@ import '../states/auth_state.dart';
 
 class AuthManagerWidget extends StatefulWidget {
   final Widget splashScreen, loginScreen, mainScreen;
-  final Future Function(AuthMethod) actionsBeforeLogIn;
   final Future Function(AuthMethod, FirebaseUser) actionsAfterLogIn;
   final Future Function(FirebaseUser) actionsBeforeLogOut;
-  final Future Function() actionsAfterLogOut;
 
   AuthManagerWidget(
       {Key key,
       this.splashScreen,
       @required this.loginScreen,
       @required this.mainScreen,
-      this.actionsBeforeLogIn,
       this.actionsAfterLogIn,
-      this.actionsBeforeLogOut,
-      this.actionsAfterLogOut})
+      this.actionsBeforeLogOut})
       : super(key: key);
 
   @override
@@ -30,10 +26,8 @@ class _AuthManagerWidgetState extends State<AuthManagerWidget> {
   @override
   Widget build(BuildContext context) {
     AuthState authModel = Provider.of<AuthState>(context);
-    authModel.actionsBeforeLogIn = widget.actionsBeforeLogIn;
     authModel.actionsAfterLogIn = widget.actionsAfterLogIn;
     authModel.actionsBeforeLogOut = widget.actionsBeforeLogOut;
-    authModel.actionsAfterLogOut = widget.actionsAfterLogOut;
 
     switch (authModel.authStatus) {
       case AuthStatus.CHECKING:
