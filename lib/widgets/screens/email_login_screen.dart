@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:easy_firebase_auth/values/auth_strings.dart';
@@ -5,7 +7,9 @@ import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import '../states/auth_state.dart';
+import '../../states/auth_state.dart';
+
+const String _logTitle = "easy_firebase_auth";
 
 class EmailLoginScreen extends StatefulWidget {
   final AppBar appBar;
@@ -232,7 +236,7 @@ class _EmailLoginScreenState extends State<EmailLoginScreen> {
                             });
                             _isEmailRegistered =
                                 await _authState.isEmailRegistered(_email);
-                            print("$_email $_isEmailRegistered");
+                            log("$_email $_isEmailRegistered", name: _logTitle);
                             setState(() {
                               _loading = false;
                             });
@@ -268,7 +272,7 @@ class _EmailLoginScreenState extends State<EmailLoginScreen> {
                               .copyWith(
                                   p: Theme.of(context)
                                       .textTheme
-                                      .body1
+                                      .bodyText2
                                       .copyWith(fontSize: 16)),
                     ),
                   ),
@@ -320,7 +324,7 @@ class _EmailLoginScreenState extends State<EmailLoginScreen> {
                         onPressed: () async {
                           if (_formKey.currentState.validate()) {
                             _formKey.currentState.save();
-                            print("$_email $_password");
+                            log("$_email $_password", name: _logTitle);
                             await _accessWithEmail(_Mode.LOGIN);
                           }
                         },
@@ -416,7 +420,7 @@ class _EmailLoginScreenState extends State<EmailLoginScreen> {
                         onPressed: () async {
                           if (_formKey.currentState.validate()) {
                             _formKey.currentState.save();
-                            print("$_email $_password");
+                            log("$_email $_password", name: _logTitle);
                             await _accessWithEmail(_Mode.SIGN_UP);
                           }
                         },
@@ -451,13 +455,14 @@ class _EmailLoginScreenState extends State<EmailLoginScreen> {
           alignment: Alignment.center,
           children: <Widget>[
             _mainWidget,
-            _loading
-                ? CircularProgressIndicator() : Container(),
+            _loading ? CircularProgressIndicator() : Container(),
           ],
         ));
   }
 }
 
 bool isValidEmail(String email) {
-  return RegExp(r"^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,253}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,253}[a-zA-Z0-9])?)*$").hasMatch(email);
+  return RegExp(
+          r"^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,253}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,253}[a-zA-Z0-9])?)*$")
+      .hasMatch(email);
 }

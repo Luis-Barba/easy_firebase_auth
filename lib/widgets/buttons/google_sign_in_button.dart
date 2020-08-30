@@ -1,5 +1,5 @@
+import 'package:easy_firebase_auth/widgets/buttons/strechable_button.dart';
 import 'package:flutter/material.dart';
-import 'package:easy_firebase_auth/buttons/strechable_button.dart';
 
 /// A sign in button that matches Google's design guidelines.
 ///

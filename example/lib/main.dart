@@ -29,13 +29,33 @@ class ParentPage extends StatelessWidget {
             "Al continuar aceptas la [política de privacidad](https://myPrivacyUrl.com) "
             "y las [condiciones de servicio](https://myTermsUrl.com).");
 
+
+    var actionsBeforeLogIn = (_) async {
+      await Future.delayed(Duration(seconds: 1));
+      print("actionsBeforeLogIn $_");
+    };
+
+    var actionsAfterLogIn = (a, b) async {
+      await Future.delayed(Duration(seconds: 1));
+      print("actionsAfterLogIn $a");
+    };
+
+    var actionsBeforeLogOut = (_) async {
+      await Future.delayed(Duration(seconds: 1));
+      print("actionsBeforeLogOut $_");
+    };
+
+    var actionsAfterLogOut = () async {
+      await Future.delayed(Duration(seconds: 1));
+      print("actionsAfterLogOut");
+    };
+
     return AuthManagerWidget(
-      onLogin: (method){
-        print('onLogin() ${method.toString()}');
-      },
-      onLogout: (){
-        print('onLogout()');
-      },
+      actionsBeforeLogIn : actionsBeforeLogIn,
+      actionsAfterLogIn : actionsAfterLogIn,
+      actionsBeforeLogOut : actionsBeforeLogOut,
+      actionsAfterLogOut : actionsAfterLogOut,
+
       splashScreen: Scaffold(
         backgroundColor: Colors.black,
         body: Center(

@@ -1,15 +1,16 @@
 import 'dart:async';
+import 'dart:developer';
 import 'package:apple_sign_in/apple_sign_in.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+
+const String _logTitle = "easy_firebase_auth";
 
 enum AuthStatus {
   CHECKING, // verifying login
-  NOT_LOGGED_FIRST_OPEN, // user not logged & intro not completed
-  NOT_LOGGED_INTRO_COMPLETE, // user not logged & intro completed
+  NOT_LOGGED, // user not logged
   LOGGED // user logged
 }
 
@@ -23,13 +24,14 @@ enum AuthMethod {
 
 /// [_onLogin] & [_onLogout] are called only one time after sign in or sign out
 class AuthState extends ChangeNotifier {
-  Function(AuthMethod) _onLogin;
-  Function() _onLogout;
   final int splashScreenDurationMillis;
 
-  _MyFirebaseAuth _myFirebaseAuth;
+  Future Function(AuthMethod) actionsBeforeLogIn;
+  Future Function(AuthMethod, FirebaseUser) actionsAfterLogIn;
+  Future Function(FirebaseUser) actionsBeforeLogOut;
+  Future Function() actionsAfterLogOut;
 
-  bool _introductionCompleted;
+  _MyFirebaseAuth _myFirebaseAuth;
 
   AuthStatus _authStatus = AuthStatus.CHECKING;
 
@@ -39,37 +41,10 @@ class AuthState extends ChangeNotifier {
     _setSplashScreenComplete();
 
     _myFirebaseAuth = _MyFirebaseAuth((user) {
-      if (user != null) {
-        _onUserLogged(AuthMethod.NULL, user);
-      } else {
-        _onUserNotLogged();
-      }
+      _authStatus = user != null ? AuthStatus.LOGGED : AuthStatus.NOT_LOGGED;
+      log("Status $_authStatus", name: _logTitle);
+      notifyListeners();
     });
-  }
-
-  setOnLoginListener(Function(AuthMethod) onLogin) {
-    this._onLogin = onLogin;
-  }
-
-  setOnLogoutListener(Function() onLogout) {
-    this._onLogout = onLogout;
-  }
-
-  Future _onUserNotLogged() async {
-    _introductionCompleted =
-        await _MySharedPreferences.getIntroductionCompleted();
-    if (_introductionCompleted) {
-      _authStatus = AuthStatus.NOT_LOGGED_INTRO_COMPLETE;
-    } else {
-      _authStatus = AuthStatus.NOT_LOGGED_FIRST_OPEN;
-    }
-
-    notifyListeners();
-  }
-
-  Future _onUserLogged(AuthMethod method, FirebaseUser user) async {
-    _authStatus = AuthStatus.LOGGED;
-    notifyListeners();
   }
 
   _setSplashScreenComplete() {
@@ -84,60 +59,97 @@ class AuthState extends ChangeNotifier {
     }
   }
 
-  setIntroductionCompleted(bool b) {
-    _MySharedPreferences.setIntroductionCompleted(b);
-    _introductionCompleted = b;
-  }
-
   Future<bool> supportsAppleSignIn() async {
     return !kIsWeb && await AppleSignIn.isAvailable();
   }
 
   Future<FirebaseUser> signInAnonymous() async {
-    var user = await _myFirebaseAuth.signInAnonymous();
-    if (user != null) {
-      _onUserLogged(AuthMethod.ANONYMOUS, user);
-      _onLogin?.call(AuthMethod.ANONYMOUS);
-    }
-    return user;
+    return _signIn(AuthMethod.ANONYMOUS);
   }
 
   Future<FirebaseUser> signInGoogle() async {
-    var user = await _myFirebaseAuth.signInGoogle();
-    if (user != null) {
-      _onUserLogged(AuthMethod.GOOGLE, user);
-      _onLogin?.call(AuthMethod.GOOGLE);
-    }
-    return user;
+    return _signIn(AuthMethod.GOOGLE);
   }
 
   Future<FirebaseUser> signInApple() async {
-    var user = await _myFirebaseAuth.signInApple();
-    if (user != null) {
-      _onUserLogged(AuthMethod.APPLE, user);
-      _onLogin?.call(AuthMethod.APPLE);
-    }
-    return user;
+    return _signIn(AuthMethod.APPLE);
   }
 
   Future<FirebaseUser> signInWithEmail(String email, String password) async {
-    var user = await _myFirebaseAuth.signInWithEmail(email, password);
-    if (user != null) {
-      _onUserLogged(AuthMethod.EMAIL, user);
-      _onLogin?.call(AuthMethod.EMAIL);
-    }
-    return user;
+    return _signIn(AuthMethod.EMAIL, email: email, password: password);
   }
 
   Future<FirebaseUser> signUpWithEmail(
       String email, String password, String name) async {
+    await actionsBeforeLogIn?.call(AuthMethod.EMAIL);
+
     var user = await _myFirebaseAuth.signUpWithEmail(email, password, name);
+
     if (user != null) {
       await changeName(name);
-      _onUserLogged(AuthMethod.EMAIL, user);
-      _onLogin?.call(AuthMethod.EMAIL);
+      _authStatus = AuthStatus.LOGGED;
+      log("Status $_authStatus", name: _logTitle);
+
+      await actionsAfterLogIn?.call(AuthMethod.EMAIL, firebaseUser);
     }
+
+    notifyListeners();
+
     return user;
+  }
+
+  /// [email] only for sign in with email
+  /// [password] only for sign in with email
+  Future<FirebaseUser> _signIn(AuthMethod method,
+      {String email, String password}) async {
+    await actionsBeforeLogIn?.call(method);
+
+    FirebaseUser user;
+
+    switch (method) {
+      case AuthMethod.EMAIL:
+        user = await _myFirebaseAuth.signInWithEmail(email, password);
+        break;
+
+      case AuthMethod.GOOGLE:
+        user = await _myFirebaseAuth.signInGoogle();
+        break;
+
+      case AuthMethod.APPLE:
+        user = await _myFirebaseAuth.signInApple();
+        break;
+
+      case AuthMethod.ANONYMOUS:
+        user = await _myFirebaseAuth.signInAnonymous();
+        break;
+
+      case AuthMethod.NULL:
+        // Nothing to do
+        break;
+    }
+
+    if (user != null) {
+      _authStatus = AuthStatus.LOGGED;
+      log("Status $_authStatus", name: _logTitle);
+    }
+
+    await actionsAfterLogIn?.call(method, firebaseUser);
+
+    notifyListeners();
+
+    return user;
+  }
+
+  Future<void> signOut() async {
+    await actionsBeforeLogOut?.call(firebaseUser);
+
+    await _myFirebaseAuth.signOut();
+    _authStatus = AuthStatus.NOT_LOGGED;
+    log("Status $_authStatus", name: _logTitle);
+
+    await actionsAfterLogOut?.call();
+
+    notifyListeners();
   }
 
   Future<bool> isEmailRegistered(String e) async {
@@ -159,12 +171,6 @@ class AuthState extends ChangeNotifier {
 
   Future<void> changeName(String name) async {
     await _myFirebaseAuth.changeName(name);
-  }
-
-  Future<void> signOut() async {
-    await _myFirebaseAuth.signOut();
-    _onUserNotLogged();
-    _onLogout?.call();
   }
 
   AuthStatus get authStatus =>
@@ -193,31 +199,6 @@ class AuthState extends ChangeNotifier {
 ///
 ///
 ///
-/// SHARED PREFERENCES
-///
-///
-///
-///
-///
-class _MySharedPreferences {
-  static const _INTRODUCTION_COMPLETED = 'introduction_completed';
-
-  static Future<bool> getIntroductionCompleted() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    return prefs.getBool(_INTRODUCTION_COMPLETED) ?? false;
-  }
-
-  static Future<void> setIntroductionCompleted(bool completed) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setBool(_INTRODUCTION_COMPLETED, completed);
-  }
-}
-
-///
-///
-///
-///
-///
 /// FIREBASE AUTH
 ///
 ///
@@ -239,7 +220,6 @@ class _MyFirebaseAuth {
 
   bool isAnonymous() {
     if (_myUser != null) return myUser.isAnonymous;
-
     return true;
   }
 
@@ -281,7 +261,7 @@ class _MyFirebaseAuth {
       switch (result.status) {
         case AuthorizationStatus.authorized:
           try {
-            print("successfull sign in");
+            log("Successfull sign in", name: _logTitle);
             final AppleIdCredential appleIdCredential = result.credential;
 
             OAuthProvider oAuthProvider =
@@ -307,7 +287,7 @@ class _MyFirebaseAuth {
             _myUser = user;
             return _myUser;
           } catch (e) {
-            print("error");
+            log("error", name: _logTitle);
           }
           break;
         case AuthorizationStatus.error:
@@ -315,11 +295,11 @@ class _MyFirebaseAuth {
           break;
 
         case AuthorizationStatus.cancelled:
-          print('User cancelled');
+          log('User cancelled', name: _logTitle);
           break;
       }
     } catch (error) {
-      print("error with apple sign in");
+      log("error with apple sign in", name: _logTitle);
     }
 
     return null;

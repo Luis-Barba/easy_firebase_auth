@@ -1,7 +1,7 @@
+import 'package:easy_firebase_auth/widgets/buttons/apple_sign_in_button.dart';
+import 'package:easy_firebase_auth/widgets/buttons/email_sign_in_button.dart';
+import 'package:easy_firebase_auth/widgets/buttons/google_sign_in_button.dart';
 import 'package:flutter/material.dart';
-import 'package:easy_firebase_auth/buttons/apple_sign_in_button.dart';
-import 'package:easy_firebase_auth/buttons/email_sign_in_button.dart';
-import 'package:easy_firebase_auth/buttons/google_sign_in_button.dart';
 import 'package:easy_firebase_auth/states/auth_state.dart';
 import 'package:easy_firebase_auth/values/auth_strings.dart';
 import 'package:provider/provider.dart';
