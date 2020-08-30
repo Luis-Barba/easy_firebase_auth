@@ -4,12 +4,10 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 enum AuthStatus {
   CHECKING, // verifying login
-  NOT_LOGGED_FIRST_OPEN, // user not logged & intro not completed
-  NOT_LOGGED_INTRO_COMPLETE, // user not logged & intro completed
+  NOT_LOGGED, // user not logged
   LOGGED // user logged
 }
 
@@ -28,8 +26,6 @@ class AuthState extends ChangeNotifier {
   final int splashScreenDurationMillis;
 
   _MyFirebaseAuth _myFirebaseAuth;
-
-  bool _introductionCompleted;
 
   AuthStatus _authStatus = AuthStatus.CHECKING;
 
@@ -56,14 +52,7 @@ class AuthState extends ChangeNotifier {
   }
 
   Future _onUserNotLogged() async {
-    _introductionCompleted =
-        await _MySharedPreferences.getIntroductionCompleted();
-    if (_introductionCompleted) {
-      _authStatus = AuthStatus.NOT_LOGGED_INTRO_COMPLETE;
-    } else {
-      _authStatus = AuthStatus.NOT_LOGGED_FIRST_OPEN;
-    }
-
+    _authStatus = AuthStatus.NOT_LOGGED;
     notifyListeners();
   }
 
@@ -82,11 +71,6 @@ class AuthState extends ChangeNotifier {
     } else {
       _splashScreenComplete = true;
     }
-  }
-
-  setIntroductionCompleted(bool b) {
-    _MySharedPreferences.setIntroductionCompleted(b);
-    _introductionCompleted = b;
   }
 
   Future<bool> supportsAppleSignIn() async {
@@ -186,31 +170,6 @@ class AuthState extends ChangeNotifier {
       _myFirebaseAuth.myUser != null ? _myFirebaseAuth.myUser.photoUrl : null;
 
   FirebaseUser get firebaseUser => _myFirebaseAuth?._myUser;
-}
-
-///
-///
-///
-///
-///
-/// SHARED PREFERENCES
-///
-///
-///
-///
-///
-class _MySharedPreferences {
-  static const _INTRODUCTION_COMPLETED = 'introduction_completed';
-
-  static Future<bool> getIntroductionCompleted() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    return prefs.getBool(_INTRODUCTION_COMPLETED) ?? false;
-  }
-
-  static Future<void> setIntroductionCompleted(bool completed) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setBool(_INTRODUCTION_COMPLETED, completed);
-  }
 }
 
 ///
