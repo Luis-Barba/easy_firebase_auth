@@ -1,9 +1,12 @@
 import 'dart:async';
+import 'dart:developer';
 import 'package:apple_sign_in/apple_sign_in.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+
+const String _logTitle = "easy_firebase_auth";
 
 enum AuthStatus {
   CHECKING, // verifying login
@@ -198,7 +201,6 @@ class _MyFirebaseAuth {
 
   bool isAnonymous() {
     if (_myUser != null) return myUser.isAnonymous;
-
     return true;
   }
 
@@ -240,7 +242,7 @@ class _MyFirebaseAuth {
       switch (result.status) {
         case AuthorizationStatus.authorized:
           try {
-            print("successfull sign in");
+            log("Successfull sign in", name: _logTitle);
             final AppleIdCredential appleIdCredential = result.credential;
 
             OAuthProvider oAuthProvider =
@@ -266,7 +268,7 @@ class _MyFirebaseAuth {
             _myUser = user;
             return _myUser;
           } catch (e) {
-            print("error");
+            log("error", name: _logTitle);
           }
           break;
         case AuthorizationStatus.error:
@@ -274,11 +276,11 @@ class _MyFirebaseAuth {
           break;
 
         case AuthorizationStatus.cancelled:
-          print('User cancelled');
+          log('User cancelled', name: _logTitle);
           break;
       }
     } catch (error) {
-      print("error with apple sign in");
+      log("error with apple sign in", name: _logTitle);
     }
 
     return null;
