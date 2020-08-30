@@ -7,7 +7,7 @@ import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import '../states/auth_state.dart';
+import '../../states/auth_state.dart';
 
 const String _logTitle = "easy_firebase_auth";
 
