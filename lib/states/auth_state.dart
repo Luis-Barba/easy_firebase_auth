@@ -26,10 +26,8 @@ enum AuthMethod {
 class AuthState extends ChangeNotifier {
   final int splashScreenDurationMillis;
 
-  Future Function(AuthMethod) actionsBeforeLogIn;
   Future Function(AuthMethod, FirebaseUser) actionsAfterLogIn;
   Future Function(FirebaseUser) actionsBeforeLogOut;
-  Future Function() actionsAfterLogOut;
 
   _MyFirebaseAuth _myFirebaseAuth;
 
@@ -38,25 +36,37 @@ class AuthState extends ChangeNotifier {
   bool _splashScreenComplete = false;
 
   AuthState({this.splashScreenDurationMillis = 0}) {
-    _setSplashScreenComplete();
-
-    _myFirebaseAuth = _MyFirebaseAuth((user) {
-      _authStatus = user != null ? AuthStatus.LOGGED : AuthStatus.NOT_LOGGED;
-      log("Status $_authStatus", name: _logTitle);
-      notifyListeners();
-    });
+    _init();
   }
 
-  _setSplashScreenComplete() {
-    if (splashScreenDurationMillis > 0) {
-      Future.delayed(Duration(milliseconds: splashScreenDurationMillis))
-          .then((_) {
+  _init() async {
+    var timeMillis = DateTime.now().millisecondsSinceEpoch;
+
+    _myFirebaseAuth = _MyFirebaseAuth((user) async {
+      if (user != null) {
+        _authStatus = AuthStatus.LOGGED;
+        await actionsAfterLogIn(AuthMethod.NULL, user);
+      } else {
+        _authStatus = AuthStatus.NOT_LOGGED;
+      }
+
+      log("Status $_authStatus", name: _logTitle);
+
+      // Check Splash Screen remaining time
+      var splashScreenRemainingTime = splashScreenDurationMillis -
+          (DateTime.now().millisecondsSinceEpoch - timeMillis);
+
+      if (splashScreenRemainingTime > 0) {
+        Future.delayed(Duration(milliseconds: splashScreenRemainingTime))
+            .then((_) {
+          _splashScreenComplete = true;
+          notifyListeners();
+        });
+      } else {
         _splashScreenComplete = true;
         notifyListeners();
-      });
-    } else {
-      _splashScreenComplete = true;
-    }
+      }
+    });
   }
 
   Future<bool> supportsAppleSignIn() async {
@@ -81,8 +91,6 @@ class AuthState extends ChangeNotifier {
 
   Future<FirebaseUser> signUpWithEmail(
       String email, String password, String name) async {
-    await actionsBeforeLogIn?.call(AuthMethod.EMAIL);
-
     var user = await _myFirebaseAuth.signUpWithEmail(email, password, name);
 
     if (user != null) {
@@ -102,8 +110,6 @@ class AuthState extends ChangeNotifier {
   /// [password] only for sign in with email
   Future<FirebaseUser> _signIn(AuthMethod method,
       {String email, String password}) async {
-    await actionsBeforeLogIn?.call(method);
-
     FirebaseUser user;
 
     switch (method) {
@@ -146,8 +152,6 @@ class AuthState extends ChangeNotifier {
     await _myFirebaseAuth.signOut();
     _authStatus = AuthStatus.NOT_LOGGED;
     log("Status $_authStatus", name: _logTitle);
-
-    await actionsAfterLogOut?.call();
 
     notifyListeners();
   }
