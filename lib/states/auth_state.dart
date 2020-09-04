@@ -25,11 +25,11 @@ enum AuthMethod {
 /// [_onLogin] & [_onLogout] are called only one time after sign in or sign out
 class AuthState extends ChangeNotifier {
   final int splashScreenDurationMillis;
+  bool autoSignInAnonymously;
 
-  Future Function(AuthMethod) actionsBeforeLogIn;
   Future Function(AuthMethod, FirebaseUser) actionsAfterLogIn;
   Future Function(FirebaseUser) actionsBeforeLogOut;
-  Future Function() actionsAfterLogOut;
+  Future Function(String) onZombieGenerated;
 
   _MyFirebaseAuth _myFirebaseAuth;
 
@@ -37,26 +37,44 @@ class AuthState extends ChangeNotifier {
 
   bool _splashScreenComplete = false;
 
-  AuthState({this.splashScreenDurationMillis = 0}) {
-    _setSplashScreenComplete();
-
-    _myFirebaseAuth = _MyFirebaseAuth((user) {
-      _authStatus = user != null ? AuthStatus.LOGGED : AuthStatus.NOT_LOGGED;
-      log("Status $_authStatus", name: _logTitle);
-      notifyListeners();
-    });
+  AuthState(
+      {this.splashScreenDurationMillis = 0,
+      this.autoSignInAnonymously = false,
+      this.onZombieGenerated}) {
+    _init();
   }
 
-  _setSplashScreenComplete() {
-    if (splashScreenDurationMillis > 0) {
-      Future.delayed(Duration(milliseconds: splashScreenDurationMillis))
-          .then((_) {
+  _init() async {
+    var timeMillis = DateTime.now().millisecondsSinceEpoch;
+
+    _myFirebaseAuth = _MyFirebaseAuth((user) async {
+      if (user != null) {
+        _authStatus = AuthStatus.LOGGED;
+        await actionsAfterLogIn(AuthMethod.NULL, user);
+      } else {
+        _authStatus = AuthStatus.NOT_LOGGED;
+        if (autoSignInAnonymously) {
+          await _signIn(AuthMethod.ANONYMOUS, shouldNotify: false);
+        }
+      }
+
+      log("Initial auth status $_authStatus", name: _logTitle);
+
+      // Check Splash Screen remaining time
+      var splashScreenRemainingTime = splashScreenDurationMillis -
+          (DateTime.now().millisecondsSinceEpoch - timeMillis);
+
+      if (splashScreenRemainingTime > 0) {
+        Future.delayed(Duration(milliseconds: splashScreenRemainingTime))
+            .then((_) {
+          _splashScreenComplete = true;
+          notifyListeners();
+        });
+      } else {
         _splashScreenComplete = true;
         notifyListeners();
-      });
-    } else {
-      _splashScreenComplete = true;
-    }
+      }
+    });
   }
 
   Future<bool> supportsAppleSignIn() async {
@@ -81,8 +99,9 @@ class AuthState extends ChangeNotifier {
 
   Future<FirebaseUser> signUpWithEmail(
       String email, String password, String name) async {
-    await actionsBeforeLogIn?.call(AuthMethod.EMAIL);
-
+    if (_authStatus == AuthStatus.LOGGED) {
+      await signOut(shouldNotify: false, canReauthenticate: false);
+    }
     var user = await _myFirebaseAuth.signUpWithEmail(email, password, name);
 
     if (user != null) {
@@ -101,8 +120,10 @@ class AuthState extends ChangeNotifier {
   /// [email] only for sign in with email
   /// [password] only for sign in with email
   Future<FirebaseUser> _signIn(AuthMethod method,
-      {String email, String password}) async {
-    await actionsBeforeLogIn?.call(method);
+      {String email, String password, bool shouldNotify = true}) async {
+    if (_authStatus == AuthStatus.LOGGED) {
+      await signOut(shouldNotify: false, canReauthenticate: false);
+    }
 
     FirebaseUser user;
 
@@ -135,21 +156,32 @@ class AuthState extends ChangeNotifier {
 
     await actionsAfterLogIn?.call(method, firebaseUser);
 
-    notifyListeners();
+    if (shouldNotify) notifyListeners();
 
     return user;
   }
 
-  Future<void> signOut() async {
+  Future<void> signOut(
+      {bool shouldNotify = true, bool canReauthenticate = true}) async {
+    String previousUid = uid;
+    bool wasAnonymous = isAnonymous;
+
     await actionsBeforeLogOut?.call(firebaseUser);
 
     await _myFirebaseAuth.signOut();
     _authStatus = AuthStatus.NOT_LOGGED;
     log("Status $_authStatus", name: _logTitle);
 
-    await actionsAfterLogOut?.call();
+    if (autoSignInAnonymously && canReauthenticate) {
+      await _signIn(AuthMethod.ANONYMOUS, shouldNotify: false);
+    }
 
-    notifyListeners();
+    if (wasAnonymous && previousUid != null) {
+      log("Zombie: $previousUid", name: _logTitle);
+      await onZombieGenerated?.call(previousUid);
+    }
+
+    if (shouldNotify) notifyListeners();
   }
 
   Future<bool> isEmailRegistered(String e) async {

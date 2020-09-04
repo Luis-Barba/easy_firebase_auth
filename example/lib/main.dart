@@ -5,21 +5,72 @@ import 'package:easy_firebase_auth/easy_firebase_auth.dart';
 void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider<AuthState>(
+    return AuthProvider(
+      autoSignInAnonymously: true,
+      splashScreenDurationMillis: 500,
       child: MaterialApp(
-        home: ParentPage(),
-      ),
-      create: (_) => AuthState(
-          splashScreenDurationMillis:
-              2000), // You can set the splash screen duration
+          home: AuthManagerWidget(
+        splashScreen: SplashScreen(),
+        loggedScreen: LoggedScreen(),
+        notLoggedScreen: NotLoggedScreen(),
+        actionsAfterLogIn: (method, user) async {
+          // Initialize user data here
+        },
+        actionsBeforeLogOut: (user) async {
+          // Stop listeners, remove notification tokens...
+        },
+      )),
     );
   }
 }
 
-class ParentPage extends StatelessWidget {
+class SplashScreen extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.black,
+      body: Center(
+        child: Text(
+          "SPLASH SCREEN",
+          style: TextStyle(color: Colors.white),
+        ),
+      ),
+    );
+  }
+}
+
+class LoggedScreen extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    AuthState authState = Provider.of(context);
+    return Scaffold(
+        backgroundColor: Colors.blue,
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text("${authState.uid}\nis anonymous: ${authState.isAnonymous}", textAlign: TextAlign.center,),
+              RaisedButton(
+                onPressed: () {
+                  authState.signOut();
+                },
+                child: Text('Sign out'),
+              ),
+              RaisedButton(
+                onPressed: () {
+                  authState.signInWithEmail("l@g.com", "123456");
+                },
+                child: Text('Reauthenticate with email'),
+              ),
+            ],
+          ),
+        ));
+  }
+}
+
+class NotLoggedScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // You can set your custom strings
@@ -29,70 +80,15 @@ class ParentPage extends StatelessWidget {
             "Al continuar aceptas la [política de privacidad](https://myPrivacyUrl.com) "
             "y las [condiciones de servicio](https://myTermsUrl.com).");
 
-
-    var actionsBeforeLogIn = (_) async {
-      await Future.delayed(Duration(seconds: 1));
-      print("actionsBeforeLogIn $_");
-    };
-
-    var actionsAfterLogIn = (a, b) async {
-      await Future.delayed(Duration(seconds: 1));
-      print("actionsAfterLogIn $a");
-    };
-
-    var actionsBeforeLogOut = (_) async {
-      await Future.delayed(Duration(seconds: 1));
-      print("actionsBeforeLogOut $_");
-    };
-
-    var actionsAfterLogOut = () async {
-      await Future.delayed(Duration(seconds: 1));
-      print("actionsAfterLogOut");
-    };
-
-    return AuthManagerWidget(
-      actionsBeforeLogIn : actionsBeforeLogIn,
-      actionsAfterLogIn : actionsAfterLogIn,
-      actionsBeforeLogOut : actionsBeforeLogOut,
-      actionsAfterLogOut : actionsAfterLogOut,
-
-      splashScreen: Scaffold(
-        backgroundColor: Colors.black,
-        body: Center(
-          child: Text(
-            "Splash Screen",
-            style: TextStyle(fontSize: 40, color: Colors.white),
-          ),
+    return LoginScreen(
+      authStrings: authStrings,
+      backgroundColor: Colors.purple,
+      expandedWidget: Center(
+        child: Container(
+          height: 200,
+          width: 300,
+          color: Colors.red,
         ),
-      ),
-      //introductionScreen: MyIntroductionScreen(),
-      loginScreen: LoginScreen(
-        authStrings: authStrings,
-        backgroundColor: Colors.purple,
-        expandedWidget: Center(
-          child: Container(
-            height: 200,
-            width: 300,
-            color: Colors.red,
-          ),
-        ),
-      ),
-      mainScreen: Builder(
-        builder: (BuildContext context) {
-          AuthState authState = Provider.of(context);
-
-          return Scaffold(
-            backgroundColor: Colors.blue,
-            body: Center(
-              child: RaisedButton(
-                onPressed: () {
-                  authState.signOut();
-                },
-                child: Text('Sign out'),
-              ),
-            ),
-          );
-        },
       ),
     );
   }

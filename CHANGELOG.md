@@ -1,3 +1,7 @@
+## [2.2.0] - 04/09/2020
+- Rename methods
+- Auto login
+- Add AuthProvider
 ## [2.1.0] - 30/08/2020
 - Add new methods
 - Refactor files
