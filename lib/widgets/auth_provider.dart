@@ -6,12 +6,14 @@ import 'package:provider/provider.dart';
 class AuthProvider extends StatelessWidget {
   final int splashScreenDurationMillis;
   final bool autoSignInAnonymously;
+  final Future Function(String) onZombieGenerated;
   final Widget child;
 
   const AuthProvider(
       {Key key,
       this.splashScreenDurationMillis,
       this.autoSignInAnonymously,
+      this.onZombieGenerated,
       @required this.child})
       : super(key: key);
 
@@ -20,7 +22,8 @@ class AuthProvider extends StatelessWidget {
     return ChangeNotifierProvider(
       create: (_) => AuthState(
           splashScreenDurationMillis: splashScreenDurationMillis,
-          autoSignInAnonymously: autoSignInAnonymously),
+          autoSignInAnonymously: autoSignInAnonymously,
+          onZombieGenerated: onZombieGenerated),
       child: child,
     );
   }

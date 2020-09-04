@@ -25,10 +25,11 @@ enum AuthMethod {
 /// [_onLogin] & [_onLogout] are called only one time after sign in or sign out
 class AuthState extends ChangeNotifier {
   final int splashScreenDurationMillis;
-  final bool autoSignInAnonymously;
+  bool autoSignInAnonymously;
 
   Future Function(AuthMethod, FirebaseUser) actionsAfterLogIn;
   Future Function(FirebaseUser) actionsBeforeLogOut;
+  Future Function(String) onZombieGenerated;
 
   _MyFirebaseAuth _myFirebaseAuth;
 
@@ -38,7 +39,8 @@ class AuthState extends ChangeNotifier {
 
   AuthState(
       {this.splashScreenDurationMillis = 0,
-      this.autoSignInAnonymously = false}) {
+      this.autoSignInAnonymously = false,
+      this.onZombieGenerated}) {
     _init();
   }
 
@@ -161,6 +163,9 @@ class AuthState extends ChangeNotifier {
 
   Future<void> signOut(
       {bool shouldNotify = true, bool canReauthenticate = true}) async {
+    String previousUid = uid;
+    bool wasAnonymous = isAnonymous;
+
     await actionsBeforeLogOut?.call(firebaseUser);
 
     await _myFirebaseAuth.signOut();
@@ -169,6 +174,11 @@ class AuthState extends ChangeNotifier {
 
     if (autoSignInAnonymously && canReauthenticate) {
       await _signIn(AuthMethod.ANONYMOUS, shouldNotify: false);
+    }
+
+    if (wasAnonymous && previousUid != null) {
+      log("Zombie: $previousUid", name: _logTitle);
+      await onZombieGenerated?.call(previousUid);
     }
 
     if (shouldNotify) notifyListeners();
