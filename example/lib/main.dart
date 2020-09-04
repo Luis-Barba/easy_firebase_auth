@@ -8,6 +8,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AuthProvider(
+      autoSignInAnonymously: true,
       splashScreenDurationMillis: 500,
       child: MaterialApp(
           home: AuthManagerWidget(
@@ -45,16 +46,27 @@ class LoggedScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     AuthState authState = Provider.of(context);
     return Scaffold(
-      backgroundColor: Colors.blue,
-      body: Center(
-        child: RaisedButton(
-          onPressed: () {
-            authState.signOut();
-          },
-          child: Text('Sign out'),
-        ),
-      ),
-    );
+        backgroundColor: Colors.blue,
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text("${authState.uid}\nis anonymous: ${authState.isAnonymous}", textAlign: TextAlign.center,),
+              RaisedButton(
+                onPressed: () {
+                  authState.signOut();
+                },
+                child: Text('Sign out'),
+              ),
+              RaisedButton(
+                onPressed: () {
+                  authState.signInWithEmail("l@g.com", "123456");
+                },
+                child: Text('Reauthenticate with email'),
+              ),
+            ],
+          ),
+        ));
   }
 }
 
