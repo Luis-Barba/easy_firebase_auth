@@ -12,7 +12,7 @@ class AuthProvider extends StatelessWidget {
   const AuthProvider(
       {Key key,
       this.splashScreenDurationMillis,
-      this.autoSignInAnonymously,
+      this.autoSignInAnonymously = false,
       this.onZombieGenerated,
       @required this.child})
       : super(key: key);
