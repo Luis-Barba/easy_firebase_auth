@@ -1,4 +1,6 @@
 ## [2.3.0] - 04/09/2020
+- Fix some issues
+## [2.3.0] - 04/09/2020
 - Fix AppleSignInButton alignment
 - Fix EmailLoginScreen errors
 ## [2.2.0] - 04/09/2020
