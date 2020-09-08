@@ -93,8 +93,16 @@ class _EmailLoginScreenState extends State<EmailLoginScreen> {
         ///   • `ERROR_TOO_MANY_REQUESTS` - If there was too many attempts to sign in as this user.
         ///   • `ERROR_OPERATION_NOT_ALLOWED` - Indicates that Email & Password accounts are not enabled.
 
-        String errorCode = e.code;
-        String message = e.message;
+        String errorCode;
+        String message;
+
+        if (e is PlatformException) {
+          errorCode = e.code;
+          message = e.message;
+        } else {
+          errorCode = "UNKNOWN";
+          message = "Unknown error";
+        }
 
         switch (errorCode) {
           case "ERROR_WEAK_PASSWORD":
