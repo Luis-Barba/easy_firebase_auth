@@ -8,7 +8,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AuthProvider(
-      autoSignInAnonymously: true,
+      autoSignInAnonymously: false,
       splashScreenDurationMillis: 500,
       child: MaterialApp(
           home: AuthManagerWidget(
