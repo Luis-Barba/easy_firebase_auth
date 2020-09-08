@@ -119,8 +119,8 @@ class _LoginScreenState extends State<LoginScreen> {
                         left: 16, right: 16, top: 8, bottom: 16),
                     child: AppleSignInButton(
                       style: widget.darkMode
-                          ? AppleSignInButtonStyle.black
-                          : AppleSignInButtonStyle.white,
+                          ? ButtonStyle.black
+                          : ButtonStyle.white,
                       type: ButtonType.continueButton,
                       onPressed: () async {
                         setState(() {
