@@ -1,11 +1,10 @@
-
 import 'package:flutter/material.dart';
 
 /// A type for the authorization button.
-enum ButtonType { defaultButton, continueButton, signIn }
+enum AppleButtonType { defaultButton, continueButton, signIn }
 
 /// A style for the authorization button.
-enum ButtonStyle { black, whiteOutline, white }
+enum AppleButtonStyle { black, whiteOutline, white }
 
 /// A button for Sign in With Apple
 class AppleSignInButton extends StatefulWidget {
@@ -15,10 +14,10 @@ class AppleSignInButton extends StatefulWidget {
   final VoidCallback onPressed;
 
   /// A type for the authorization button.
-  final ButtonType type;
+  final AppleButtonType type;
 
   /// A style for the authorization button.
-  final ButtonStyle style;
+  final AppleButtonStyle style;
 
   /// A custom corner radius to be used by this button.
   final double cornerRadius;
@@ -26,13 +25,13 @@ class AppleSignInButton extends StatefulWidget {
   /// A custom text
   final String text;
 
-  const AppleSignInButton({
-    this.onPressed,
-    this.type = ButtonType.defaultButton,
-    this.style = ButtonStyle.white,
-    this.cornerRadius = 6,
-    this.text
-  })  : assert(type != null),
+  const AppleSignInButton(
+      {this.onPressed,
+      this.type = AppleButtonType.defaultButton,
+      this.style = AppleButtonStyle.white,
+      this.cornerRadius = 6,
+      this.text})
+      : assert(type != null),
         assert(style != null),
         assert(cornerRadius != null);
 
@@ -46,11 +45,11 @@ class _AppleSignInButtonState extends State<AppleSignInButton> {
   @override
   Widget build(BuildContext context) {
     final bgColor =
-    widget.style == ButtonStyle.black ? Colors.black : Colors.white;
+        widget.style == AppleButtonStyle.black ? Colors.black : Colors.white;
     final textColor =
-    widget.style == ButtonStyle.black ? Colors.white : Colors.black;
+        widget.style == AppleButtonStyle.black ? Colors.white : Colors.black;
     final borderColor =
-    widget.style == ButtonStyle.white ? Colors.white : Colors.black;
+        widget.style == AppleButtonStyle.white ? Colors.white : Colors.black;
 
     return GestureDetector(
       onTapDown: (_) => setState(() => _isTapDown = true),
@@ -90,9 +89,11 @@ class _AppleSignInButtonState extends State<AppleSignInButton> {
                 ),
               ),
               Text(
-                widget.text != null? widget.text : widget.type == ButtonType.continueButton
-                    ? 'Continue with Apple'
-                    : 'Sign in with Apple',
+                widget.text != null
+                    ? widget.text
+                    : widget.type == AppleButtonType.continueButton
+                        ? 'Continue with Apple'
+                        : 'Sign in with Apple',
                 style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.w500,
@@ -102,8 +103,7 @@ class _AppleSignInButtonState extends State<AppleSignInButton> {
                 ),
               ),
             ],
-          )
-      ),
+          )),
     );
   }
 }
