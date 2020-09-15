@@ -1,3 +1,5 @@
+## [2.3.2] - 15/09/2020.
+- Fix AppleSignInButton to be compatible with Flutter beta
 ## [2.3.1] - 04/09/2020
 - Fix some issues
 ## [2.3.0] - 04/09/2020
