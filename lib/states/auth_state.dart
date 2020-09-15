@@ -50,7 +50,7 @@ class AuthState extends ChangeNotifier {
     _myFirebaseAuth = _MyFirebaseAuth((user) async {
       if (user != null) {
         _authStatus = AuthStatus.LOGGED;
-        await actionsAfterLogIn(AuthMethod.NULL, user);
+        await actionsAfterLogIn?.call(AuthMethod.NULL, user);
       } else {
         _authStatus = AuthStatus.NOT_LOGGED;
         if (autoSignInAnonymously) {
