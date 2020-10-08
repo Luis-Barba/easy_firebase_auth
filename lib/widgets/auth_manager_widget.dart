@@ -6,8 +6,8 @@ import '../states/auth_state.dart';
 
 class AuthManagerWidget extends StatefulWidget {
   final Widget splashScreen, notLoggedScreen, loggedScreen;
-  final Future Function(AuthMethod, FirebaseUser) actionsAfterLogIn;
-  final Future Function(FirebaseUser) actionsBeforeLogOut;
+  final Future Function(AuthMethod, User) actionsAfterLogIn;
+  final Future Function(User) actionsBeforeLogOut;
 
   AuthManagerWidget(
       {Key key,
