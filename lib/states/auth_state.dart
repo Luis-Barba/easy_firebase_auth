@@ -121,9 +121,8 @@ class AuthState extends ChangeNotifier {
   /// [password] only for sign in with email
   Future<User> _signIn(AuthMethod method,
       {String email, String password, bool shouldNotify = true}) async {
-    if (_authStatus == AuthStatus.LOGGED) {
-      await signOut(shouldNotify: false, canReauthenticate: false);
-    }
+    String previousUid = uid;
+    bool wasAnonymous = isAnonymous;
 
     User user;
 
@@ -150,13 +149,21 @@ class AuthState extends ChangeNotifier {
     }
 
     if (user != null) {
+      // Successful Login
       _authStatus = AuthStatus.LOGGED;
       log("Status $_authStatus", name: _logTitle);
+
+      // Check Zombie
+      if (wasAnonymous && previousUid != null) {
+        log("Zombie: $previousUid", name: _logTitle);
+        await onZombieGenerated?.call(previousUid);
+      }
+
+      await actionsAfterLogIn?.call(method, firebaseUser);
+      if (shouldNotify) notifyListeners();
+    } else {
+      // Fail
     }
-
-    await actionsAfterLogIn?.call(method, firebaseUser);
-
-    if (shouldNotify) notifyListeners();
 
     return user;
   }
@@ -223,7 +230,7 @@ class AuthState extends ChangeNotifier {
   String get photoUrl =>
       _myFirebaseAuth.myUser != null ? _myFirebaseAuth.myUser.photoURL : null;
 
-  User get firebaseUser => _myFirebaseAuth?._myUser;
+  User get firebaseUser => _myFirebaseAuth?.myUser;
 }
 
 ///
@@ -239,27 +246,23 @@ class AuthState extends ChangeNotifier {
 ///
 
 class _MyFirebaseAuth {
-  User _myUser;
   FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
   GoogleSignIn _googleSignIn = GoogleSignIn();
 
   _MyFirebaseAuth(Function(User) onUser) {
     _firebaseAuth.authStateChanges().first.then((user) {
-      _myUser = user;
       onUser(user);
     });
   }
 
   bool isAnonymous() {
-    if (_myUser != null) return myUser.isAnonymous;
-    return true;
+    return myUser?.isAnonymous ?? true;
   }
 
   ///AUTH METHODS///
   Future<User> signInAnonymous() async {
     UserCredential result = await _firebaseAuth.signInAnonymously();
-    _myUser = result.user;
-    return _myUser;
+    return result.user;
   }
 
   Future<User> signInGoogle() async {
@@ -276,8 +279,7 @@ class _MyFirebaseAuth {
       UserCredential result =
           await _firebaseAuth.signInWithCredential(credential);
 
-      _myUser = result.user;
-      return _myUser;
+      return result.user;
     }
 
     return null;
@@ -310,8 +312,7 @@ class _MyFirebaseAuth {
             await _firebaseAuth.currentUser
                 .updateProfile(displayName: displayName);
 
-            _myUser = _firebaseAuth.currentUser;
-            return _myUser;
+            return _firebaseAuth.currentUser;
           } catch (e) {
             log("error", name: _logTitle);
           }
@@ -335,8 +336,7 @@ class _MyFirebaseAuth {
     UserCredential result = await _firebaseAuth.signInWithEmailAndPassword(
         email: email, password: password);
 
-    _myUser = result.user;
-    return _myUser;
+    return result.user;
   }
 
   Future<User> signUpWithEmail(
@@ -344,8 +344,7 @@ class _MyFirebaseAuth {
     UserCredential result = await _firebaseAuth.createUserWithEmailAndPassword(
         email: email, password: password);
 
-    _myUser = result.user;
-    return _myUser;
+    return result.user;
   }
 
   Future<bool> isEmailRegistered(String e) async {
@@ -363,43 +362,37 @@ class _MyFirebaseAuth {
   }
 
   Future<User> changePhotoUrl(String photoUrl) async {
-    await _myUser.updateProfile(photoURL: photoUrl);
+    await myUser.updateProfile(photoURL: photoUrl);
     //await _myUser.reload(); //NO FUNCIONA
-    _myUser = _firebaseAuth.currentUser;
-    return _myUser;
+    return myUser;
   }
 
   Future<User> changeName(String name) async {
-    await _myUser.updateProfile(displayName: name);
+    await myUser.updateProfile(displayName: name);
     //await _myUser.reload(); //NO FUNCIONA
-    _myUser = _firebaseAuth.currentUser;
 
-    return _myUser;
+    return myUser;
   }
 
   Future<void> signOut() async {
     await _googleSignIn.signOut();
     await _firebaseAuth.signOut();
-
-    _myUser = null;
   }
 
   bool needsReLogInForDelete() {
     int maxTime = 5 * 60 * 1000;
     return DateTime.now().millisecondsSinceEpoch -
-            _myUser.metadata.lastSignInTime.millisecondsSinceEpoch >
+            myUser.metadata.lastSignInTime.millisecondsSinceEpoch >
         maxTime;
   }
 
   Future<void> deleteUser() async {
-    if (_myUser != null) {
-      await _myUser.delete();
+    if (myUser != null) {
+      await myUser.delete();
     }
     await _googleSignIn.signOut();
     await _firebaseAuth.signOut();
-
-    _myUser = null;
   }
 
-  User get myUser => _myUser;
+  User get myUser => _firebaseAuth.currentUser;
 }

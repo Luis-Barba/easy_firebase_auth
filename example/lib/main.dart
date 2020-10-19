@@ -69,6 +69,12 @@ class LoggedScreen extends StatelessWidget {
                 },
                 child: Text('Reauthenticate with email'),
               ),
+              RaisedButton(
+                onPressed: () {
+                  authState.signInGoogle();
+                },
+                child: Text('Reauthenticate with google'),
+              ),
             ],
           ),
         ));
