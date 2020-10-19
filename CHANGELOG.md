@@ -1,3 +1,5 @@
+## [2.5.1] - 19/10/2020.
+- Fix issue on reauthentication
 ## [2.5.0] - 8/10/2020.
 - Upgrade dependencies
 ## [2.4.0] - 16/09/2020.
