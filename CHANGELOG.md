@@ -1,3 +1,5 @@
+## [2.5.0] - 8/10/2020.
+- Upgrade dependencies
 ## [2.4.0] - 16/09/2020.
 - Upgrade flutter_markdown
 ## [2.3.2] - 15/09/2020.
