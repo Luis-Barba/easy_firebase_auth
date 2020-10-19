@@ -27,8 +27,8 @@ class AuthState extends ChangeNotifier {
   final int splashScreenDurationMillis;
   bool autoSignInAnonymously;
 
-  Future Function(AuthMethod, FirebaseUser) actionsAfterLogIn;
-  Future Function(FirebaseUser) actionsBeforeLogOut;
+  Future Function(AuthMethod, User) actionsAfterLogIn;
+  Future Function(User) actionsBeforeLogOut;
   Future Function(String) onZombieGenerated;
 
   _MyFirebaseAuth _myFirebaseAuth;
@@ -81,23 +81,23 @@ class AuthState extends ChangeNotifier {
     return !kIsWeb && await AppleSignIn.isAvailable();
   }
 
-  Future<FirebaseUser> signInAnonymous() async {
+  Future<User> signInAnonymous() async {
     return _signIn(AuthMethod.ANONYMOUS);
   }
 
-  Future<FirebaseUser> signInGoogle() async {
+  Future<User> signInGoogle() async {
     return _signIn(AuthMethod.GOOGLE);
   }
 
-  Future<FirebaseUser> signInApple() async {
+  Future<User> signInApple() async {
     return _signIn(AuthMethod.APPLE);
   }
 
-  Future<FirebaseUser> signInWithEmail(String email, String password) async {
+  Future<User> signInWithEmail(String email, String password) async {
     return _signIn(AuthMethod.EMAIL, email: email, password: password);
   }
 
-  Future<FirebaseUser> signUpWithEmail(
+  Future<User> signUpWithEmail(
       String email, String password, String name) async {
     if (_authStatus == AuthStatus.LOGGED) {
       await signOut(shouldNotify: false, canReauthenticate: false);
@@ -119,13 +119,13 @@ class AuthState extends ChangeNotifier {
 
   /// [email] only for sign in with email
   /// [password] only for sign in with email
-  Future<FirebaseUser> _signIn(AuthMethod method,
+  Future<User> _signIn(AuthMethod method,
       {String email, String password, bool shouldNotify = true}) async {
     if (_authStatus == AuthStatus.LOGGED) {
       await signOut(shouldNotify: false, canReauthenticate: false);
     }
 
-    FirebaseUser user;
+    User user;
 
     switch (method) {
       case AuthMethod.EMAIL:
@@ -221,9 +221,9 @@ class AuthState extends ChangeNotifier {
       _myFirebaseAuth.myUser != null ? _myFirebaseAuth.myUser.uid : null;
 
   String get photoUrl =>
-      _myFirebaseAuth.myUser != null ? _myFirebaseAuth.myUser.photoUrl : null;
+      _myFirebaseAuth.myUser != null ? _myFirebaseAuth.myUser.photoURL : null;
 
-  FirebaseUser get firebaseUser => _myFirebaseAuth?._myUser;
+  User get firebaseUser => _myFirebaseAuth?._myUser;
 }
 
 ///
@@ -239,12 +239,12 @@ class AuthState extends ChangeNotifier {
 ///
 
 class _MyFirebaseAuth {
-  FirebaseUser _myUser;
+  User _myUser;
   FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
   GoogleSignIn _googleSignIn = GoogleSignIn();
 
-  _MyFirebaseAuth(Function(FirebaseUser) onUser) {
-    _firebaseAuth.onAuthStateChanged.first.then((user) {
+  _MyFirebaseAuth(Function(User) onUser) {
+    _firebaseAuth.authStateChanges().first.then((user) {
       _myUser = user;
       onUser(user);
     });
@@ -256,35 +256,34 @@ class _MyFirebaseAuth {
   }
 
   ///AUTH METHODS///
-  Future<FirebaseUser> signInAnonymous() async {
-    AuthResult result = await _firebaseAuth.signInAnonymously();
-    FirebaseUser user = result.user;
-    _myUser = user;
+  Future<User> signInAnonymous() async {
+    UserCredential result = await _firebaseAuth.signInAnonymously();
+    _myUser = result.user;
     return _myUser;
   }
 
-  Future<FirebaseUser> signInGoogle() async {
+  Future<User> signInGoogle() async {
     GoogleSignInAccount googleUser = await _googleSignIn.signIn();
 
     if (googleUser != null) {
       GoogleSignInAuthentication googleAuth = await googleUser.authentication;
 
-      final AuthCredential credential = GoogleAuthProvider.getCredential(
+      final AuthCredential credential = GoogleAuthProvider.credential(
         accessToken: googleAuth.accessToken,
         idToken: googleAuth.idToken,
       );
 
-      AuthResult result = await _firebaseAuth.signInWithCredential(credential);
-      FirebaseUser user = result.user;
+      UserCredential result =
+          await _firebaseAuth.signInWithCredential(credential);
 
-      _myUser = user;
+      _myUser = result.user;
       return _myUser;
     }
 
     return null;
   }
 
-  Future<FirebaseUser> signInApple() async {
+  Future<User> signInApple() async {
     try {
       final AuthorizationResult result = await AppleSignIn.performRequests([
         AppleIdRequest(requestedScopes: [Scope.email, Scope.fullName])
@@ -296,9 +295,8 @@ class _MyFirebaseAuth {
             log("Successfull sign in", name: _logTitle);
             final AppleIdCredential appleIdCredential = result.credential;
 
-            OAuthProvider oAuthProvider =
-                new OAuthProvider(providerId: "apple.com");
-            final AuthCredential credential = oAuthProvider.getCredential(
+            OAuthProvider oAuthProvider = new OAuthProvider("apple.com");
+            final AuthCredential credential = oAuthProvider.credential(
               idToken: String.fromCharCodes(appleIdCredential.identityToken),
               accessToken:
                   String.fromCharCodes(appleIdCredential.authorizationCode),
@@ -306,17 +304,13 @@ class _MyFirebaseAuth {
 
             await _firebaseAuth.signInWithCredential(credential); //AuthResult
 
-            _firebaseAuth.currentUser().then((val) async {
-              UserUpdateInfo updateUser = UserUpdateInfo();
-              updateUser.displayName =
-                  "${appleIdCredential.fullName.givenName} ${appleIdCredential.fullName.familyName}";
-              updateUser.photoUrl = "define an url";
-              await val.updateProfile(updateUser);
-            });
+            var displayName =
+                "${appleIdCredential.fullName.givenName} ${appleIdCredential.fullName.familyName}";
 
-            FirebaseUser user = await _firebaseAuth.currentUser();
+            await _firebaseAuth.currentUser
+                .updateProfile(displayName: displayName);
 
-            _myUser = user;
+            _myUser = _firebaseAuth.currentUser;
             return _myUser;
           } catch (e) {
             log("error", name: _logTitle);
@@ -337,34 +331,30 @@ class _MyFirebaseAuth {
     return null;
   }
 
-  Future<FirebaseUser> signInWithEmail(String email, String password) async {
-    AuthResult result = await _firebaseAuth.signInWithEmailAndPassword(
+  Future<User> signInWithEmail(String email, String password) async {
+    UserCredential result = await _firebaseAuth.signInWithEmailAndPassword(
         email: email, password: password);
-    FirebaseUser user = result.user;
 
-    _myUser = user;
+    _myUser = result.user;
     return _myUser;
   }
 
-  Future<FirebaseUser> signUpWithEmail(
+  Future<User> signUpWithEmail(
       String email, String password, String name) async {
-    AuthResult result = await _firebaseAuth.createUserWithEmailAndPassword(
+    UserCredential result = await _firebaseAuth.createUserWithEmailAndPassword(
         email: email, password: password);
-    FirebaseUser user = result.user;
 
-    _myUser = user;
-
+    _myUser = result.user;
     return _myUser;
   }
 
   Future<bool> isEmailRegistered(String e) async {
-    var list = await _firebaseAuth.fetchSignInMethodsForEmail(email: e);
+    var list = await _firebaseAuth.fetchSignInMethodsForEmail(e);
     return list != null && list.isNotEmpty;
   }
 
   Future<void> sendEmailVerification() async {
-    FirebaseUser user = await _firebaseAuth.currentUser();
-    user.sendEmailVerification();
+    _firebaseAuth.currentUser.sendEmailVerification();
   }
 
   ///CHANGES///
@@ -372,22 +362,17 @@ class _MyFirebaseAuth {
     await _firebaseAuth.sendPasswordResetEmail(email: email);
   }
 
-  Future<FirebaseUser> changePhotoUrl(String photoUrl) async {
-    UserUpdateInfo updateInfo = new UserUpdateInfo();
-    updateInfo.photoUrl = photoUrl;
-    await _myUser.updateProfile(updateInfo);
+  Future<User> changePhotoUrl(String photoUrl) async {
+    await _myUser.updateProfile(photoURL: photoUrl);
     //await _myUser.reload(); //NO FUNCIONA
-    _myUser = await _firebaseAuth.currentUser();
-
+    _myUser = _firebaseAuth.currentUser;
     return _myUser;
   }
 
-  Future<FirebaseUser> changeName(String name) async {
-    UserUpdateInfo updateInfo = new UserUpdateInfo();
-    updateInfo.displayName = name;
-    await _myUser.updateProfile(updateInfo);
+  Future<User> changeName(String name) async {
+    await _myUser.updateProfile(displayName: name);
     //await _myUser.reload(); //NO FUNCIONA
-    _myUser = await _firebaseAuth.currentUser();
+    _myUser = _firebaseAuth.currentUser;
 
     return _myUser;
   }
@@ -416,5 +401,5 @@ class _MyFirebaseAuth {
     _myUser = null;
   }
 
-  FirebaseUser get myUser => _myUser;
+  User get myUser => _myUser;
 }
