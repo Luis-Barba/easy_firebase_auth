@@ -1,6 +1,6 @@
 name: easy_firebase_auth
 description: Manage authentication with firebase in an extremely simple way
-version: 2.5.1
+version: 2.5.2
 homepage: https://lymtechx.com/
 repository: https://github.com/lymtechx/easy_firebase_auth
 issue_tracker: https://github.com/lymtechx/easy_firebase_auth/issues
