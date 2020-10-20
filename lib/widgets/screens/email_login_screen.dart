@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:easy_firebase_auth/values/auth_strings.dart';
@@ -93,42 +94,38 @@ class _EmailLoginScreenState extends State<EmailLoginScreen> {
         ///   • `ERROR_TOO_MANY_REQUESTS` - If there was too many attempts to sign in as this user.
         ///   • `ERROR_OPERATION_NOT_ALLOWED` - Indicates that Email & Password accounts are not enabled.
 
-        String errorCode;
+        log(e.toString(), name: LOG_TITLE);
+
         String message;
 
-        if (e is PlatformException) {
-          errorCode = e.code;
-          message = e.message;
+        if (e is FirebaseAuthException) {
+          switch (e.code) {
+            case "user-disabled":
+              message = strings.errorUserDisabled;
+              break;
+            case "user-not-found":
+              message = strings.errorUserNotFound;
+              break;
+            case "wrong-password":
+              message = strings.errorWrongPassword;
+              break;
+            case "email-already-in-use":
+              message = strings.errorEmailAlreadyInUse;
+              break;
+            case "invalid-email":
+              message = strings.errorInvalidEmail;
+              break;
+            case "operation-not-allowed":
+              message = strings.errorOperationNotAllowed;
+              break;
+            case "weak-password":
+              message = strings.errorWeakPassword;
+              break;
+            default:
+              message = e.message;
+          }
         } else {
-          errorCode = "UNKNOWN";
           message = "Unknown error";
-        }
-
-        switch (errorCode) {
-          case "ERROR_WEAK_PASSWORD":
-            message = strings.errorWeakPassword;
-            break;
-          case "ERROR_INVALID_EMAIL":
-            message = strings.errorInvalidEmail;
-            break;
-          case "ERROR_EMAIL_ALREADY_IN_USE":
-            message = strings.errorEmailAlreadyInUse;
-            break;
-          case "ERROR_WRONG_PASSWORD":
-            message = strings.errorWrongPassword;
-            break;
-          case "ERROR_USER_NOT_FOUND":
-            message = strings.errorUserNotFound;
-            break;
-          case "ERROR_USER_DISABLED":
-            message = strings.errorUserDisabled;
-            break;
-          case "ERROR_TOO_MANY_REQUESTS":
-            message = strings.errorTooManyRequests;
-            break;
-          case "ERROR_OPERATION_NOT_ALLOWED":
-            message = strings.errorOperationNotAllowed;
-            break;
         }
 
         setState(() {

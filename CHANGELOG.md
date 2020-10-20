@@ -1,3 +1,5 @@
+## [2.5.2] - 20/10/2020.
+- Fix email sign in errors
 ## [2.5.1] - 19/10/2020.
 - Fix issue on reauthentication
 ## [2.5.0] - 8/10/2020.
