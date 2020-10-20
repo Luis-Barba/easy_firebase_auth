@@ -6,7 +6,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
-const String _logTitle = "easy_firebase_auth";
+const String LOG_TITLE = "easy_firebase_auth";
 
 enum AuthStatus {
   CHECKING, // verifying login
@@ -58,7 +58,7 @@ class AuthState extends ChangeNotifier {
         }
       }
 
-      log("Initial auth status $_authStatus", name: _logTitle);
+      log("Initial auth status $_authStatus", name: LOG_TITLE);
 
       // Check Splash Screen remaining time
       var splashScreenRemainingTime = splashScreenDurationMillis -
@@ -107,7 +107,7 @@ class AuthState extends ChangeNotifier {
     if (user != null) {
       await changeName(name);
       _authStatus = AuthStatus.LOGGED;
-      log("Status $_authStatus", name: _logTitle);
+      log("Status $_authStatus", name: LOG_TITLE);
 
       await actionsAfterLogIn?.call(AuthMethod.EMAIL, firebaseUser);
     }
@@ -151,11 +151,11 @@ class AuthState extends ChangeNotifier {
     if (user != null) {
       // Successful Login
       _authStatus = AuthStatus.LOGGED;
-      log("Status $_authStatus", name: _logTitle);
+      log("Status $_authStatus", name: LOG_TITLE);
 
       // Check Zombie
       if (wasAnonymous && previousUid != null) {
-        log("Zombie: $previousUid", name: _logTitle);
+        log("Zombie: $previousUid", name: LOG_TITLE);
         await onZombieGenerated?.call(previousUid);
       }
 
@@ -177,14 +177,14 @@ class AuthState extends ChangeNotifier {
 
     await _myFirebaseAuth.signOut();
     _authStatus = AuthStatus.NOT_LOGGED;
-    log("Status $_authStatus", name: _logTitle);
+    log("Status $_authStatus", name: LOG_TITLE);
 
     if (autoSignInAnonymously && canReauthenticate) {
       await _signIn(AuthMethod.ANONYMOUS, shouldNotify: false);
     }
 
     if (wasAnonymous && previousUid != null) {
-      log("Zombie: $previousUid", name: _logTitle);
+      log("Zombie: $previousUid", name: LOG_TITLE);
       await onZombieGenerated?.call(previousUid);
     }
 
@@ -294,7 +294,7 @@ class _MyFirebaseAuth {
       switch (result.status) {
         case AuthorizationStatus.authorized:
           try {
-            log("Successfull sign in", name: _logTitle);
+            log("Successfull sign in", name: LOG_TITLE);
             final AppleIdCredential appleIdCredential = result.credential;
 
             OAuthProvider oAuthProvider = new OAuthProvider("apple.com");
@@ -314,7 +314,7 @@ class _MyFirebaseAuth {
 
             return _firebaseAuth.currentUser;
           } catch (e) {
-            log("error", name: _logTitle);
+            log("error", name: LOG_TITLE);
           }
           break;
         case AuthorizationStatus.error:
@@ -322,11 +322,11 @@ class _MyFirebaseAuth {
           break;
 
         case AuthorizationStatus.cancelled:
-          log('User cancelled', name: _logTitle);
+          log('User cancelled', name: LOG_TITLE);
           break;
       }
     } catch (error) {
-      log("error with apple sign in", name: _logTitle);
+      log("error with apple sign in", name: LOG_TITLE);
     }
 
     return null;
