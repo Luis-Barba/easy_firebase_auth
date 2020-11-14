@@ -268,7 +268,7 @@ class _EmailLoginScreenState extends State<EmailLoginScreen> {
                               .copyWith(
                                   p: Theme.of(context)
                                       .textTheme
-                                      .body1
+                                      .bodyText2
                                       .copyWith(fontSize: 16)),
                     ),
                   ),

@@ -284,7 +284,7 @@ class _MyFirebaseAuth {
     if (googleUser != null) {
       GoogleSignInAuthentication googleAuth = await googleUser.authentication;
 
-      final AuthCredential credential = GoogleAuthProvider.getCredential(
+      final AuthCredential credential = GoogleAuthProvider.credential(
         accessToken: googleAuth.accessToken,
         idToken: googleAuth.idToken,
       );
