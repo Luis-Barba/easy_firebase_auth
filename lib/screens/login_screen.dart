@@ -1,4 +1,4 @@
-import 'package:apple_sign_in/apple_sign_in_button.dart';
+import 'package:apple_sign_in/apple_sign_in_button.dart' as asi;
 import 'package:easy_firebase_auth/buttons/facebook_sign_in_button.dart';
 import 'package:easy_firebase_auth/buttons/twitter_sign_in_button.dart';
 import 'package:flutter/material.dart';
@@ -189,12 +189,12 @@ class _LoginScreenState extends State<LoginScreen> {
                     height: 40,
                     margin: EdgeInsets.only(
                         left: 16, right: 16, top: 8, bottom: 16),
-                    child: AppleSignInButton(
+                    child: asi.AppleSignInButton(
 
                       style: widget.darkMode
-                          ? ButtonStyle.black
-                          : ButtonStyle.white,
-                      type: ButtonType.continueButton,
+                          ? asi.ButtonStyle.black
+                          : asi.ButtonStyle.white,
+                      type: asi.ButtonType.continueButton,
                       onPressed: () async {
                         setState(() {
                           loading = true;

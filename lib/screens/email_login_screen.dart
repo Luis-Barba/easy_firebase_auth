@@ -401,11 +401,11 @@ class _EmailLoginScreenState extends State<EmailLoginScreen> {
                       padding: EdgeInsets.only(bottom: 16),
                       child: MarkdownBody(
                         data: strings.privacyMarkdown,
-                        onTapLink: (url) async {
-                          if (await canLaunch(url)) {
-                            await launch(url);
+                        onTapLink: (text, href, title) async {
+                          if (await canLaunch(href)) {
+                            await launch(href);
                           } else {
-                            throw 'Could not launch $url';
+                            throw 'Could not launch $href';
                           }
                         },
                       )),
