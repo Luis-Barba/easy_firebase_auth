@@ -159,7 +159,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                   ),
 
-
+/*
                 if (widget.logInWithTwitter)
                   Container(
                     width: 300,
@@ -181,7 +181,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       text: strings.signInWithTwitter,
                     ),
                   ),
-
+*/
 
                 if (widget.logInWithApple && supportsAppleSignIn)
                   Container(

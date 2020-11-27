@@ -1,6 +1,6 @@
 name: easy_firebase_auth
 description: Manage authentication with firebase in an extremely simple way
-version: 1.0.8
+version: 1.0.9
 homepage: https://lymtechx.com/
 repository: https://github.com/lymtechx/easy_firebase_auth
 issue_tracker: https://github.com/lymtechx/easy_firebase_auth/issues
@@ -20,7 +20,7 @@ dependencies:
   
 
   flutter_facebook_login: ^3.0.0
-  flutter_twitter: ^1.1.3
+  # flutter_twitter: ^1.1.3 # ainda utiliza o UIWebKit, por isso não pode ser utilizado no ios!!
 
   provider: ^4.3.2+2
   url_launcher: ^5.7.10

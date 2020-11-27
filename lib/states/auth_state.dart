@@ -4,7 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:flutter_twitter/flutter_twitter.dart';
+//import 'package:flutter_twitter/flutter_twitter.dart';
 import 'package:flutter_facebook_login/flutter_facebook_login.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -120,7 +120,7 @@ class AuthState extends ChangeNotifier {
     return user;
   }
 
-
+/*
   Future<User> signInTwitter(String twitterConsumerKey, String twitterConsumerSecret) async {
     var user = await _myFirebaseAuth.signInTwitter(twitterConsumerKey, twitterConsumerSecret);
     if (user != null) {
@@ -129,7 +129,7 @@ class AuthState extends ChangeNotifier {
     }
     return user;
   }
-
+*/
 
   Future<User> signInFacebook(List<String> permissions) async {
     var user = await _myFirebaseAuth.signInFacebook(permissions);
@@ -300,7 +300,7 @@ class _MyFirebaseAuth {
   }
 
 
-
+/*
   Future<User> signInTwitter(String twitterConsumerKey, String twitterConsumerSecret) async {
     var twitterLogin = new TwitterLogin(
       consumerKey: twitterConsumerKey,
@@ -331,6 +331,7 @@ class _MyFirebaseAuth {
 
     return null;
   }
+*/
 
 
 
