@@ -16,7 +16,7 @@ dependencies:
   apple_sign_in: ^0.1.0
   
   # was ^0.16.1
-  firebase_auth: ^0.18.3
+  firebase_auth: ^0.20.0 #^0.18.3
   
 
   flutter_facebook_login: ^3.0.0
