@@ -1,3 +1,5 @@
+## [2.6.0] - 20/10/2020.
+- Migrate to sign_in_with_apple
 ## [2.5.2] - 20/10/2020.
 - Fix email sign in errors
 ## [2.5.1] - 19/10/2020.

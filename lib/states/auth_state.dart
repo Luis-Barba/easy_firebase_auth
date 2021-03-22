@@ -1,10 +1,10 @@
 import 'dart:async';
 import 'dart:developer';
-import 'package:apple_sign_in/apple_sign_in.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
 const String LOG_TITLE = "easy_firebase_auth";
 
@@ -78,7 +78,7 @@ class AuthState extends ChangeNotifier {
   }
 
   Future<bool> supportsAppleSignIn() async {
-    return !kIsWeb && await AppleSignIn.isAvailable();
+    return !kIsWeb && await SignInWithApple.isAvailable();
   }
 
   Future<User> signInAnonymous() async {
@@ -287,48 +287,30 @@ class _MyFirebaseAuth {
 
   Future<User> signInApple() async {
     try {
-      final AuthorizationResult result = await AppleSignIn.performRequests([
-        AppleIdRequest(requestedScopes: [Scope.email, Scope.fullName])
-      ]);
+      final appleIdCredential = await SignInWithApple.getAppleIDCredential(
+        scopes: [
+          AppleIDAuthorizationScopes.email,
+          AppleIDAuthorizationScopes.fullName,
+        ],
+      );
 
-      switch (result.status) {
-        case AuthorizationStatus.authorized:
-          try {
-            log("Successfull sign in", name: LOG_TITLE);
-            final AppleIdCredential appleIdCredential = result.credential;
+      OAuthProvider oAuthProvider = new OAuthProvider("apple.com");
+      final AuthCredential credential = oAuthProvider.credential(
+        idToken: appleIdCredential.identityToken,
+        accessToken: appleIdCredential.authorizationCode,
+      );
 
-            OAuthProvider oAuthProvider = new OAuthProvider("apple.com");
-            final AuthCredential credential = oAuthProvider.credential(
-              idToken: String.fromCharCodes(appleIdCredential.identityToken),
-              accessToken:
-                  String.fromCharCodes(appleIdCredential.authorizationCode),
-            );
+      await _firebaseAuth.signInWithCredential(credential); //AuthResult
 
-            await _firebaseAuth.signInWithCredential(credential); //AuthResult
+      var displayName =
+          "${appleIdCredential.givenName} ${appleIdCredential.familyName}";
 
-            var displayName =
-                "${appleIdCredential.fullName.givenName} ${appleIdCredential.fullName.familyName}";
+      await _firebaseAuth.currentUser.updateProfile(displayName: displayName);
 
-            await _firebaseAuth.currentUser
-                .updateProfile(displayName: displayName);
-
-            return _firebaseAuth.currentUser;
-          } catch (e) {
-            log("error", name: LOG_TITLE);
-          }
-          break;
-        case AuthorizationStatus.error:
-          // do something
-          break;
-
-        case AuthorizationStatus.cancelled:
-          log('User cancelled', name: LOG_TITLE);
-          break;
-      }
-    } catch (error) {
+      return _firebaseAuth.currentUser;
+    } catch (e) {
       log("error with apple sign in", name: LOG_TITLE);
     }
-
     return null;
   }
 

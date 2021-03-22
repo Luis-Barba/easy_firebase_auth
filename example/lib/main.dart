@@ -56,7 +56,7 @@ class LoggedScreen extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text("${authState.uid}\nis anonymous: ${authState.isAnonymous}", textAlign: TextAlign.center,),
+              Text("${authState.uid}\nis anonymous: ${authState.isAnonymous}\nname: ${authState.name}", textAlign: TextAlign.center,),
               RaisedButton(
                 onPressed: () {
                   authState.signOut();
@@ -74,6 +74,12 @@ class LoggedScreen extends StatelessWidget {
                   authState.signInGoogle();
                 },
                 child: Text('Reauthenticate with google'),
+              ),
+              RaisedButton(
+                onPressed: () {
+                  authState.changeName("Name ${DateTime.now().millisecondsSinceEpoch}");
+                },
+                child: Text('Change name'),
               ),
             ],
           ),
