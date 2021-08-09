@@ -110,7 +110,7 @@ packages:
       name: flutter_markdown
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.6.2"
+    version: "0.6.4"
   flutter_test:
     dependency: "direct dev"
     description: flutter
@@ -127,7 +127,7 @@ packages:
       name: google_sign_in
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "5.0.3"
+    version: "5.0.7"
   google_sign_in_platform_interface:
     dependency: transitive
     description:
@@ -286,7 +286,7 @@ packages:
       name: url_launcher
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "6.0.4"
+    version: "6.0.9"
   url_launcher_linux:
     dependency: transitive
     description:
