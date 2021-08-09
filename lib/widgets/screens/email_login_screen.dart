@@ -13,13 +13,13 @@ import '../../states/auth_state.dart';
 const String _logTitle = "easy_firebase_auth";
 
 class EmailLoginScreen extends StatefulWidget {
-  final AppBar appBar;
-  final Color mainColor, shimmerColor1, shimmerColor2;
+  final AppBar? appBar;
+  final Color? mainColor, shimmerColor1, shimmerColor2;
 
-  final AuthStrings authStrings;
+  final AuthStrings? authStrings;
 
   const EmailLoginScreen(
-      {Key key,
+      {Key? key,
       this.appBar,
       this.mainColor, //not white
       this.shimmerColor1,
@@ -37,16 +37,14 @@ class _EmailLoginScreenState extends State<EmailLoginScreen> {
   final _scaffoldKey = GlobalKey<ScaffoldState>();
   final _formKey = GlobalKey<FormState>();
 
-  AuthState _authState;
+  bool? _isEmailRegistered;
+  String _email = "";
+  String _password = "";
+  String _name = "";
 
-  bool _isEmailRegistered;
-  String _email;
-  String _password;
-  String _name;
+  String? _errorMessage;
 
-  String _errorMessage;
-
-  bool _loading;
+  bool _loading = false;
 
   @override
   void initState() {
@@ -58,7 +56,7 @@ class _EmailLoginScreenState extends State<EmailLoginScreen> {
   Widget build(BuildContext context) {
     AuthStrings strings = widget.authStrings ?? AuthStrings.english();
 
-    _authState = Provider.of<AuthState>(context);
+    AuthState _authState = Provider.of<AuthState>(context);
 
     Color mainColor = widget.mainColor ?? Theme.of(context).primaryColor;
 
@@ -122,7 +120,7 @@ class _EmailLoginScreenState extends State<EmailLoginScreen> {
               message = strings.errorWeakPassword;
               break;
             default:
-              message = e.message;
+              message = e.message ?? "Unknown error";
           }
         } else {
           message = "Unknown error";
@@ -136,10 +134,11 @@ class _EmailLoginScreenState extends State<EmailLoginScreen> {
     }
 
     Widget _showErrorMessage() {
-      if (_errorMessage != null && _errorMessage.length > 0) {
+      String? error = _errorMessage;
+      if (error != null && error.length > 0) {
         return Center(
           child: Text(
-            _errorMessage,
+            error,
             style: TextStyle(
                 fontSize: 13.0,
                 color: Colors.red,
@@ -163,11 +162,11 @@ class _EmailLoginScreenState extends State<EmailLoginScreen> {
           label: strings.understood,
           onPressed: () {
             // Some code to undo the change.
-            _scaffoldKey.currentState.hideCurrentSnackBar();
+            _scaffoldKey.currentState?.hideCurrentSnackBar();
           },
         ),
       );
-      _scaffoldKey.currentState.showSnackBar(snackBar);
+      _scaffoldKey.currentState?.showSnackBar(snackBar);
     }
 
     _showDialogForResetPassword(String mail) {
@@ -219,14 +218,14 @@ class _EmailLoginScreenState extends State<EmailLoginScreen> {
                             color: Colors.grey,
                           )),
                       validator: (value) {
-                        if (value.isEmpty) {
+                        if (value == null || value.isEmpty) {
                           return strings.emailCantBeEmpty;
                         } else if (!isValidEmail(value)) {
                           return strings.emailNotValid;
                         }
                         return null;
                       },
-                      onSaved: (value) => _email = value,
+                      onSaved: (value) => _email = value ?? "",
                     ),
                   ),
                   Row(
@@ -234,8 +233,8 @@ class _EmailLoginScreenState extends State<EmailLoginScreen> {
                     children: <Widget>[
                       RaisedButton(
                         onPressed: () async {
-                          if (_formKey.currentState.validate()) {
-                            _formKey.currentState.save();
+                          if (_formKey.currentState?.validate() ?? false) {
+                            _formKey.currentState?.save();
                             setState(() {
                               _loading = true;
                             });
@@ -278,7 +277,7 @@ class _EmailLoginScreenState extends State<EmailLoginScreen> {
                                   p: Theme.of(context)
                                       .textTheme
                                       .bodyText2
-                                      .copyWith(fontSize: 16)),
+                                      ?.copyWith(fontSize: 16)),
                     ),
                   ),
                   Padding(
@@ -294,7 +293,7 @@ class _EmailLoginScreenState extends State<EmailLoginScreen> {
                             color: Colors.grey,
                           )),
                       validator: (value) {
-                        if (value.isEmpty) {
+                        if (value == null || value.isEmpty) {
                           return strings.passwordEmpty;
                         }
 
@@ -305,7 +304,7 @@ class _EmailLoginScreenState extends State<EmailLoginScreen> {
 
                         return null;
                       },
-                      onSaved: (value) => _password = value,
+                      onSaved: (value) => _password = value ?? "",
                     ),
                   ),
                   Row(
@@ -327,8 +326,8 @@ class _EmailLoginScreenState extends State<EmailLoginScreen> {
                       ),
                       RaisedButton(
                         onPressed: () async {
-                          if (_formKey.currentState.validate()) {
-                            _formKey.currentState.save();
+                          if (_formKey.currentState?.validate() ?? false) {
+                            _formKey.currentState?.save();
                             log("$_email $_password", name: _logTitle);
                             await _accessWithEmail(_Mode.LOGIN);
                           }
@@ -370,13 +369,13 @@ class _EmailLoginScreenState extends State<EmailLoginScreen> {
                             color: Colors.grey,
                           )),
                       validator: (value) {
-                        var name = value.trim();
+                        var name = value?.trim() ?? "";
                         if (name.isEmpty) {
                           return strings.nameCantBeEmpty;
                         }
                         return null;
                       },
-                      onSaved: (value) => _name = value.trim(),
+                      onSaved: (value) => _name = value?.trim() ?? "",
                     ),
                   ),
                   Padding(
@@ -392,14 +391,14 @@ class _EmailLoginScreenState extends State<EmailLoginScreen> {
                             color: Colors.grey,
                           )),
                       validator: (value) {
-                        if (value.isEmpty) {
+                        if (value == null || value.isEmpty) {
                           return strings.passwordEmpty;
                         } else if (value.length < 6) {
                           return strings.passwordTooShort;
                         }
                         return null;
                       },
-                      onSaved: (value) => _password = value,
+                      onSaved: (value) => _password = value ?? "",
                     ),
                   ),
                   Padding(
@@ -410,8 +409,8 @@ class _EmailLoginScreenState extends State<EmailLoginScreen> {
                       padding: EdgeInsets.only(bottom: 16),
                       child: MarkdownBody(
                         data: strings.privacyMarkdown,
-                        onTapLink: (url) async {
-                          if (await canLaunch(url)) {
+                        onTapLink: (_, url, __) async {
+                          if (url != null && await canLaunch(url)) {
                             await launch(url);
                           } else {
                             throw 'Could not launch $url';
@@ -423,8 +422,8 @@ class _EmailLoginScreenState extends State<EmailLoginScreen> {
                     children: <Widget>[
                       RaisedButton(
                         onPressed: () async {
-                          if (_formKey.currentState.validate()) {
-                            _formKey.currentState.save();
+                          if (_formKey.currentState?.validate() ?? false) {
+                            _formKey.currentState?.save();
                             log("$_email $_password", name: _logTitle);
                             await _accessWithEmail(_Mode.SIGN_UP);
                           }
@@ -442,11 +441,11 @@ class _EmailLoginScreenState extends State<EmailLoginScreen> {
     }
 
     var _mainWidget = Container();
-    if (_email == null && _isEmailRegistered == null) {
+    if (_email.isEmpty && _isEmailRegistered == null) {
       _mainWidget = _getEmailInput();
-    } else if (_isEmailRegistered != null && _isEmailRegistered) {
+    } else if (_isEmailRegistered != null && _isEmailRegistered!) {
       _mainWidget = _getPasswordInput();
-    } else if (_isEmailRegistered != null && !_isEmailRegistered) {
+    } else if (_isEmailRegistered != null && !_isEmailRegistered!) {
       _mainWidget = _getSignUpInput();
     }
 
