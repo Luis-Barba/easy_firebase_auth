@@ -13,18 +13,18 @@ dependencies:
     sdk: flutter
 
   # https://pub.dev/packages/google_sign_in
-  google_sign_in: 5.0.3
+  google_sign_in: ^5.0.3
   # https://pub.dev/packages/sign_in_with_apple
-  sign_in_with_apple: 3.0.0
+  sign_in_with_apple: ^3.0.0
   # https://pub.dev/packages/firebase_auth
-  firebase_auth: 3.0.1
+  firebase_auth: ^3.0.1
 
   # https://pub.dev/packages/provider
-  provider: 5.0.0
+  provider: ^5.0.0
   # https://pub.dev/packages/url_launcher
-  url_launcher: 6.0.4
+  url_launcher: ^6.0.4
   # https://pub.dev/packages/flutter_markdown
-  flutter_markdown: 0.6.2
+  flutter_markdown: ^0.6.2
 
 dev_dependencies:
   flutter_test:

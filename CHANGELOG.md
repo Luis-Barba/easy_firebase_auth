@@ -1,3 +1,5 @@
+## [3.0.0] - 9/10/2021.
+- Migrate to null safety
 ## [2.6.0] - 20/10/2020.
 - Migrate to sign_in_with_apple
 ## [2.5.2] - 20/10/2020.
