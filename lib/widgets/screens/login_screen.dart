@@ -11,14 +11,14 @@ import 'email_login_screen.dart';
 class LoginScreen extends StatefulWidget {
   final bool logInWithEmail, logInWithGoogle, logInWithApple, logInAnonymous;
   final bool darkMode;
-  final Color backgroundColor;
-  final Widget backgroundWidget, expandedWidget;
-  final AuthStrings authStrings;
+  final Color? backgroundColor;
+  final Widget? backgroundWidget, expandedWidget;
+  final AuthStrings? authStrings;
 
-  final WidgetBuilder emailLoginBuilder;
+  final WidgetBuilder? emailLoginBuilder;
 
   const LoginScreen(
-      {Key key,
+      {Key? key,
       this.emailLoginBuilder,
       this.logInWithEmail = true,
       this.logInWithGoogle = true,
@@ -65,9 +65,7 @@ class _LoginScreenState extends State<LoginScreen> {
             Column(
               children: <Widget>[
                 Expanded(
-                  child: widget.expandedWidget != null
-                      ? widget.expandedWidget
-                      : Container(),
+                  child: widget.expandedWidget?? Container(),
                 ),
                 if (widget.logInWithEmail)
                   Container(
@@ -76,7 +74,9 @@ class _LoginScreenState extends State<LoginScreen> {
                     margin: EdgeInsets.only(
                         left: 16, right: 16, top: 8, bottom: 16),
                     child: EmailSignInButton(
-                      buttonColor: Colors.green,
+                      lightButtonColor: Colors.green,
+                      darkButtonColor: Colors.green,
+                      darkMode: widget.darkMode,
                       text: strings.signInWithEmail,
                       onPressed: () {
                         Navigator.push(
@@ -118,10 +118,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     margin: EdgeInsets.only(
                         left: 16, right: 16, top: 8, bottom: 16),
                     child: AppleSignInButton(
-                      style: widget.darkMode
-                          ? AppleButtonStyle.black
-                          : AppleButtonStyle.white,
-                      type: AppleButtonType.continueButton,
+                      darkMode: widget.darkMode,
                       onPressed: () async {
                         setState(() {
                           loading = true;

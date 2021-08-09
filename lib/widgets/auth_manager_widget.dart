@@ -6,14 +6,14 @@ import '../states/auth_state.dart';
 
 class AuthManagerWidget extends StatefulWidget {
   final Widget splashScreen, notLoggedScreen, loggedScreen;
-  final Future Function(AuthMethod, User) actionsAfterLogIn;
-  final Future Function(User) actionsBeforeLogOut;
+  final Future Function(AuthMethod, User?)? actionsAfterLogIn;
+  final Future Function(User?)? actionsBeforeLogOut;
 
   AuthManagerWidget(
-      {Key key,
-      @required this.splashScreen,
-      @required this.notLoggedScreen,
-      @required this.loggedScreen,
+      {Key? key,
+      required this.splashScreen,
+      required this.notLoggedScreen,
+      required this.loggedScreen,
       this.actionsAfterLogIn,
       this.actionsBeforeLogOut})
       : super(key: key);
@@ -38,9 +38,6 @@ class _AuthManagerWidgetState extends State<AuthManagerWidget> {
 
       case AuthStatus.LOGGED:
         return widget.loggedScreen;
-
-      default:
-        return null;
     }
   }
 }
