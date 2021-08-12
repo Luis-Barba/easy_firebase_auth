@@ -31,7 +31,7 @@ class AppleSignInButton extends StatelessWidget {
       darkMode
           ? "graphics/apple_light_icon.png"
           : "graphics/apple_dark_icon.png",
-      package: "x_auth",
+      package: "easy_firebase_auth",
       height: 18.0,
       width: 18.0,
     );
