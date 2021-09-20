@@ -1,6 +1,8 @@
-## [3.0.1] - 12/10/2021.
+## [3.1.0] - 20/09/2021.
+- Fix Sign In Button
+## [3.0.1] - 12/09/2021.
 - Fix Apple Auth
-## [3.0.0] - 9/10/2021.
+## [3.0.0] - 9/09/2021.
 - Migrate to null safety
 ## [2.6.0] - 20/10/2020.
 - Migrate to sign_in_with_apple

@@ -37,14 +37,12 @@ class SignInButton extends StatelessWidget {
           width: 24,
           child: leading,
         ),
-        label: Expanded(
-          child: Container(
-            margin: EdgeInsets.only(right: iconWidth + iconPadding),
-            padding: EdgeInsets.symmetric(horizontal: 16),
-            alignment: centerText ? Alignment.center : Alignment.centerLeft,
-            child: Text(
-              text,
-            ),
+        label: Container(
+          margin: EdgeInsets.only(right: iconWidth + iconPadding),
+          padding: EdgeInsets.symmetric(horizontal: 16),
+          alignment: centerText ? Alignment.center : Alignment.centerLeft,
+          child: Text(
+            text,
           ),
         ),
         style: style,
