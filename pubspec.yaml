@@ -1,6 +1,6 @@
 name: easy_firebase_auth
 description: Manage authentication with firebase in an extremely simple way
-version: 3.1.0
+version: 3.2.0
 homepage: https://lymtechx.com/
 repository: https://github.com/lymtechx/easy_firebase_auth
 issue_tracker: https://github.com/lymtechx/easy_firebase_auth/issues
@@ -13,11 +13,11 @@ dependencies:
     sdk: flutter
 
   # https://pub.dev/packages/google_sign_in
-  google_sign_in: ^5.0.3
+  google_sign_in: ^5.1.1
   # https://pub.dev/packages/sign_in_with_apple
-  sign_in_with_apple: ^3.0.0
+  sign_in_with_apple: ^3.2.0
   # https://pub.dev/packages/firebase_auth
-  firebase_auth: ^3.0.1
+  firebase_auth: ^3.1.3
   # https://pub.dev/packages/crypto (Needed for Apple Sign In)
   crypto: ^3.0.1
 
